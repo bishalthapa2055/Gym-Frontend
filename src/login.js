@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth, firebase } from "./firebase_config.js";
 import styled from "styled-components";
 import { sendData } from "./Token.js";
+import axios from "axios";
+import { adminService } from "./http/admin-services.jsx";
 
 const Container = styled.div`
   width: 100vw;
@@ -59,14 +61,22 @@ const Login = () => {
     final
       .confirm(otp)
       .then((result) => {
-        // success
-        // console.log(result);
-        const token = result.user._delegate.accessToken;
-        console.log(result.user._delegate.accessToken);
-        setAccessToken(token);
+        const accessToken = result.user._delegate.accessToken;
+        // console.log(result.user._delegate.accessToken);
+
+        localStorage.setItem("accessToken", accessToken);
+        setAccessToken(accessToken);
         const number = auth.currentUser.phoneNumber;
-        // console.log(number);
+
         sendData(number);
+
+        // useEffect(() => {
+        const fetchdata = async () => {
+          const res = await adminService.getloginUser();
+          console.log(res);
+        };
+        fetchdata();
+        // }, []);
       })
       .catch((err) => {
         alert("Wrong code");

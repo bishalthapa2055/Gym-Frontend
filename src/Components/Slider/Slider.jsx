@@ -21,6 +21,8 @@ import LoyaltyIcon from "@mui/icons-material/Loyalty";
 // import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
+import { auth } from "../../firebase_config.js";
+
 const drawerWidth = 240;
 
 const data = [
@@ -107,6 +109,10 @@ export default function Slider() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const logout = () => {
+    auth.signOut();
+    // localStorage.removeItem("accessToken");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -140,6 +146,9 @@ export default function Slider() {
           >
             <PersonIcon />
           </IconButton> */}
+          <button style={{ marginLeft: "20px" }} onClick={logout}>
+            Logout
+          </button>
         </Toolbar>
       </AppBar>
       <Drawer

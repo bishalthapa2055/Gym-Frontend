@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-// import formik from "formik";
+import React, { useState } from "react";
+
 import axios from "axios";
 import {
   Button,
@@ -9,16 +9,24 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  Snackbar,
+  Stack,
   Typography,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
-const UserForm = ({ setModal }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phonenumber, setPhonenumber] = useState("");
-  const [emergency_number, setEmergency_number] = useState("");
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
-  const [image, setImage] = useState();
+const EditUserForm = ({ edit, id, setModal, user }) => {
+  const [open, setOpen] = React.useState(false);
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [phonenumber, setPhonenumber] = useState(user.phone);
+  const [emergency_number, setEmergency_number] = useState(
+    user.emergency_number
+  );
 
   const handlename = (e) => {
     setName(e.target.value);
@@ -32,47 +40,52 @@ const UserForm = ({ setModal }) => {
   const handleemergency = (e) => {
     setEmergency_number(e.target.value);
   };
-  const handleimage = (e) => {
-    //   const data = new FormData();
-    // data.append('file',e.target.files[0]);
-    // setImage(image :[...e.target.file]);
-    setImage(e.target.files[0]);
-  };
 
+  //   const handleBlur = (e) => {
+  //     setName(e.target.value);
+  //   };
+  // for snackbar
+  //   const [open, setOpen] = React.useState(false);
+  //   const handleqqqClose = (event, reason) => {
+  //     if (reason === "clickaway") {
+  //       return;
+  //     }
+
+  //     setOpen(false);
+  //   };
+
+  // const deleteConfirm = () => {
+  //   setOpen(true);
+  // };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
   const handleSubmit = (e) => {
-    //handlesubmit work to be done
+    setOpen(true);
     e.preventDefault();
     window.location.reload();
-
-    const url = "http://localhost:8888/users/create";
+    // e.stopImmediatePropagation();
+    console.log("click");
+    const url = `http://localhost:8888/users/update/${id}`;
     axios
-      .post(
-        url,
-        // {
-        //   name: name,
-        //   phone: phonenumber,
-        //   email: email,
-        //   emergency_number: emergency_number,
-        //   image: formData,
-        // },
-        // config
-        {
-          name: name,
-          phone: phonenumber,
-          email: email,
-          emergency_number: emergency_number,
-          // image: formData,
-        }
-      )
+      .patch(url, {
+        name: name,
+        phone: phonenumber,
+        email: email,
+        emergency_number: emergency_number,
+      })
       .then(function (response) {
         console.log(response);
-        alert("Form submitted sucessfully");
+        // useNavigate()
+        // alert("Form Updated Sucessfully");
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-  // console.log(image);
 
   return (
     <Dialog fullWidth maxWidth="md" open={true}>
@@ -86,7 +99,7 @@ const UserForm = ({ setModal }) => {
         </Typography>
       </DialogTitle>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <DialogContent dividers sx={{ p: 2 }}>
           <Grid container spacing={2} flexWrap="wrap">
             <Grid item xs={12} lg={8}>
@@ -100,9 +113,11 @@ const UserForm = ({ setModal }) => {
                     // helperText={touched.name && errors.name}
                     label="Name"
                     name="name"
+                    placeholder={user.name}
                     // onBlur={handleBlur}
                     onChange={handlename}
-                    // value={values.name}
+                    // onBlur={handleBlur}
+                    value={name}
                     variant="outlined"
                   />
                 </Grid>
@@ -116,11 +131,12 @@ const UserForm = ({ setModal }) => {
                     name="email"
                     // onBlur={handleBlur}
                     onChange={handlemail}
-                    // value={values.email}
+                    placeholder={email}
+                    value={email}
                     variant="outlined"
                   />
                 </Grid>
-                {/*  */}
+
                 <Grid item xs={12}>
                   <TextField
                     size="small"
@@ -131,7 +147,8 @@ const UserForm = ({ setModal }) => {
                     name="phonenumber"
                     //   onBlur={handleBlur}
                     onChange={handlephone}
-                    //   value={values.password}
+                    value={phonenumber}
+                    placeholder={user.phone}
                     variant="outlined"
                   />
                 </Grid>
@@ -139,38 +156,14 @@ const UserForm = ({ setModal }) => {
                 <Grid item xs={12}>
                   <TextField
                     size="small"
-                    // error={Boolean(
-                    //   touched.primary_number && errors.primary_number
-                    // )}
                     fullWidth
-                    // helperText={touched.primary_number && errors.primary_number}
                     label="Emergency Number"
                     name="emergency_number"
-                    // onBlur={handleBlur}
                     onChange={handleemergency}
-                    // value={values.primary_number}
+                    value={emergency_number}
+                    placeholder={user.emergency_number}
                     variant="outlined"
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  {/* <TextField
-                    size="small"
-                    // error={Boolean(
-                    //   touched.secondary_number && errors.secondary_number
-                    // )}
-                    fullWidth
-                    // helperText={
-                    //   touched.secondary_number && errors.secondary_number
-                    // }
-                    // label="Image"
-                    name="image"
-                    // onBlur={handleBlur}
-                    onChange={handleimage}
-                    // value={values.secondary_number}
-                    variant="outlined"
-                    type="file"
-                  /> */}
-                  {/* <input type="file" id="image" alt="Image" /> */}
                 </Grid>
               </Grid>
             </Grid>
@@ -181,21 +174,29 @@ const UserForm = ({ setModal }) => {
           <Button color="secondary" onClick={() => setModal((prev) => !prev)}>
             Cancel
           </Button>
-          {/* <input type="submit" name="submit" value="Cancel" formnovalidate /> */}
-          <Button
-            type="submit"
-            // startIcon={isSubmitting ? <CircularProgress size="1rem" /> : null}
-            // disabled={Boolean(errors.submit) || isSubmitting}
-            variant="contained"
-            onClick={handleSubmit}
-          >
-            {/* {edit ? "Update Student" : "Add new student"} */}
-            Submit
+          <Button type="submit" variant="contained">
+            Edit
           </Button>
+          <Snackbar
+            open={open}
+            autoHideDuration={5000}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Alert
+              onclose={handleClose}
+              severity="success"
+              sx={{ width: "100%" }}
+              vertical="top"
+              horizontal="right"
+            >
+              <b>{user.name} is Sucessfully Updated!!!</b>
+            </Alert>
+          </Snackbar>
         </DialogActions>
       </form>
     </Dialog>
   );
 };
 
-export default UserForm;
+export default EditUserForm;

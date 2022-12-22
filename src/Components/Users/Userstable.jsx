@@ -9,8 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
-// import SendIcon from "@mui/icons-material/Send";
-// import AddIcon from "@mui/icons-material/Add";
+import DeleteUserForm from "./DeleteUserForm";
 import {
   TablePagination,
   Stack,
@@ -23,21 +22,33 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import Header from "../User/Userheader";
 import Search from "@mui/icons-material/Search";
+import EditUserForm from "./EditUserForm";
+import { adminService } from "../../http/admin-services";
 
 function Userstable() {
   const [users, setUsers] = useState("");
   const [page, setPage] = React.useState(2);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [modalState, setModalState] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [currentUser, setCurrentUser] = useState();
+  const [deleteDailog, setDeleteDailog] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:8888/users/displays").then(function (response) {
-      // console.log(response.data.count);
-      // setUsers(response.data.data);
-      setUsers(response.data.data);
-      // console.log(response.data.data.count);
-    });
+    const fetchdata = async () => {
+      const res = await adminService.getUser();
+      console.log(res);
+    };
+    fetchdata();
   }, []);
-  console.log(users);
+  // console.log(users);
+  const openEditForm = (id, user) => {
+    //open edit form
+    setUserId(id);
+    setCurrentUser(user);
+    setModalState(!modalState);
+  };
+  // console.log(userId);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -48,6 +59,13 @@ function Userstable() {
     setPage(0);
   };
 
+  const openDeleteDialog = (id, user) => {
+    // console.log(id, "clicked");
+    setUserId(id);
+    setCurrentUser(user);
+    setDeleteDailog(!modalState);
+  };
+  // console.log(userId);
   return (
     <Box>
       <Header />
@@ -111,10 +129,19 @@ function Userstable() {
                   <TableCell align="right">{data.created}</TableCell>
                   <TableCell align="right">
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <Button variant="contained" startIcon={<EditIcon />}>
+                      <Button
+                        variant="contained"
+                        startIcon={<EditIcon />}
+                        onClick={() => openEditForm(data._id, data)}
+                        // onClick={() => alert("clicked")}
+                      >
                         Edit
                       </Button>
-                      <Button variant="contained" startIcon={<DeleteIcon />}>
+                      <Button
+                        variant="contained"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => openDeleteDialog(data._id, data)}
+                      >
                         Delete
                       </Button>
                     </Stack>
@@ -134,13 +161,28 @@ function Userstable() {
         onRowsPerPageChange={handleChangeRowsPerPage}
       /> */}
       <TablePagination
-      component="div"
-      count={100}
-      page={page}
-      onPageChange={handleChangePage}
-      rowsPerPage={rowsPerPage}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
+        component="div"
+        count={50}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+      {modalState && (
+        <EditUserForm
+          edit={true}
+          id={userId}
+          setModal={setModalState}
+          user={currentUser}
+        />
+      )}
+      {deleteDailog && (
+        <DeleteUserForm
+          id={userId}
+          setModal={setDeleteDailog}
+          user={currentUser}
+        />
+      )}
     </Box>
   );
 }
