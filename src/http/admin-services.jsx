@@ -5,7 +5,7 @@ export const adminService = {
     try {
       const user = await api.get(`/login`);
       if (user) {
-        console.log(user);
+        console.log("user", user);
         // dispatch(getuser(user));
         //   return Promise.resolve(user);
       }
@@ -13,4 +13,12 @@ export const adminService = {
       return Promise.reject(error);
     }
   },
+  // To display the packages
+
+  // getPackages : async()=>
+  // {
+  //   try{
+  //     const packages = await api.get("/")
+  //   }
+  // }
 };

@@ -7,7 +7,7 @@ const api = axios.create({
 api.defaults.headers.post["Content-Type"] = "application/json";
 api.interceptors.request.use(function (config) {
   const accessToken = localStorage.getItem("accessToken");
-  config.headers.Authorization = `Bearer ${accessToken}`;
+  config.headers.authorization = `Bearer ${accessToken}`;
   return config;
 });
 

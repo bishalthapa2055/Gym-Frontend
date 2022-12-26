@@ -1,8 +1,9 @@
 import Slider from "./Components/Slider/Slider";
 import DashboardContent from "./Components/Home";
 import Users from "./Components/Users/Userstable";
+import Packages from "./Components/Packages";
 // import { Routes, Route } from "react-router-dom";
-
+import Memberships from "./Components/Membership";
 const routes = [
   {
     path: "/",
@@ -30,7 +31,7 @@ const routes = [
         children: [
           {
             path: "/memberships",
-            element: <Users />,
+            element: <Memberships />,
           },
           //   {
           //     path: "/students/:id",
@@ -44,6 +45,19 @@ const routes = [
           {
             path: "/users",
             element: <Users />,
+          },
+          //   {
+          //     path: "/students/:id",
+          //     element: <StudentDetail />,
+          //   },
+        ],
+      },
+      {
+        path: "packages",
+        children: [
+          {
+            path: "/packages",
+            element: <Packages />,
           },
           //   {
           //     path: "/students/:id",

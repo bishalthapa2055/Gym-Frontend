@@ -27,21 +27,26 @@ import { adminService } from "../../http/admin-services";
 
 function Userstable() {
   const [users, setUsers] = useState("");
-  const [page, setPage] = React.useState(2);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [modalState, setModalState] = useState(false);
   const [userId, setUserId] = useState("");
   const [currentUser, setCurrentUser] = useState();
   const [deleteDailog, setDeleteDailog] = useState(false);
 
   useEffect(() => {
-    const fetchdata = async () => {
-      const res = await adminService.getUser();
-      console.log(res);
-    };
-    fetchdata();
+    // const fetchdata = async () => {
+    // const res = await adminService.getUser();
+    // console.log(res);
+    axios
+      .get("http://localhost:8888/users/displays")
+      .then((res) => setUsers(res.data.data))
+      .catch((err) => console.log(err));
+
+    // fetchdata();
+    // },
   }, []);
-  // console.log(users);
+  console.log(users);
   const openEditForm = (id, user) => {
     //open edit form
     setUserId(id);
@@ -160,13 +165,23 @@ function Userstable() {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       /> */}
-      <TablePagination
+      {/* <TablePagination
         component="div"
         count={50}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+      /> */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={users.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{ backgroundColor: "#D8E6CC" }}
       />
       {modalState && (
         <EditUserForm

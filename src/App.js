@@ -2,14 +2,15 @@ import React from "react";
 import { auth } from "./firebase_config.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Login from "./login.js";
-// import Mainpage from "./main.js";
-// import Header from "./Components/Header.jsx";
-// import Slider from "./Components/Slider.jsx";
+
 import App1 from "./App1.jsx";
 function App() {
   const [user] = useAuthState(auth);
+  // console.log(user);
+
   // return user ? <Mainpage /> : <Login />;
   return user ? <App1 /> : <Login />;
+  // return <Login />;
   //   if user  {
   //     if ($response.role=="user")
   //     {

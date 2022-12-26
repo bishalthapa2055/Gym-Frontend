@@ -20,6 +20,7 @@ import { Dashboard, People } from "@mui/icons-material";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 // import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
 
 import { auth } from "../../firebase_config.js";
 
@@ -42,6 +43,11 @@ const data = [
     title: "MEMBERSHIPS",
     Link: "/memberships",
     icon: <LoyaltyIcon />,
+  },
+  {
+    title: "PACKAGES",
+    Link: "/packages",
+    icon: <InventoryIcon />,
   },
 ];
 
@@ -111,7 +117,7 @@ export default function Slider() {
   };
   const logout = () => {
     auth.signOut();
-    // localStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken");
   };
 
   return (
@@ -146,9 +152,16 @@ export default function Slider() {
           >
             <PersonIcon />
           </IconButton> */}
-          <button style={{ marginLeft: "20px" }} onClick={logout}>
+          {/* <button style={{ marginLeft: "20px" }} onClick={logout}>
             Logout
-          </button>
+          </button> */}
+          <Button
+            sx={{ mt: { xs: 10, sm: 0 } }}
+            onClick={logout}
+            variant="outlined"
+          >
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer
