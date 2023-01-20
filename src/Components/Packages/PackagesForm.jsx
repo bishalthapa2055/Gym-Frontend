@@ -14,47 +14,48 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { form } from "../../Schemas";
+
+import { packagesSchema } from "../Schemas/packages";
+import { adminService } from "../../http/admin-services";
 import { useDispatch } from "react-redux";
-import { adminService } from "../../../http/admin-services";
-import { useSnackbar } from "notistack";
 
 const initialValues = {
   name: "",
-  email: "",
-  phonenumber: "",
-  emergency_number: "",
+  discount_percentage: "",
+  duration_in_days: "",
+  price: "",
 };
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const UserForm = ({ setModal }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phonenumber, setPhonenumber] = useState("");
-  const [emergency_number, setEmergency_number] = useState("");
+const PackagesForm = ({ setModal }) => {
+  //   const [name, setName] = useState("");
+  //   const [discount_percentage, setdiscount_percentage] = useState("");
+  //   const [duration_in_days, setduration_in_days] = useState("");
+  //   const [price, setprice] = useState("");
   const [open, setOpen] = React.useState(false);
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+
+  //   const navigate = useNavigate();
   const { values, handleChange, handleBlur, errors, handleSubmit, touched } =
     useFormik({
       initialValues: initialValues,
-      validationSchema: form,
-      onSubmit: async (values, action) => {
-        // const url = "http://localhost:8888/users/create";
+      validationSchema: packagesSchema,
+      onSubmit: (values, action) => {
         // const res = axios
         //   .post(
         //     url,
 
         //     {
         //       name: values.name,
-        //       phone: values.phonenumber,
-        //       email: values.email,
-        //       emergency_number: values.emergency_number,
+        //       //   phone: values.phonenumber,
+        //       //   email: values.email,
+        //       //   emergency_number: values.emergency_number,
         //       // image: formData,
+        //       discount_percentage: values.discount_percentage,
+        //       duration_in_days: values.duration_in_days,
+        //       price: values.price,
         //     }
         //   )
         //   .then(function (response) {
@@ -68,37 +69,23 @@ const UserForm = ({ setModal }) => {
         //     console.log(error);
         //   })
         //   .finally(() => setOpen(true));
-        try {
-          const data = {
-            name: values.name,
-            phone: values.phonenumber,
-            email: values.email,
-            emergency_number: values.emergency_number,
-          };
-          const res = await adminService.createUsers(dispatch, data);
-          console.log("🚀 ~ file: UserForm.jsx:79 ~ onSubmit: ~ res", res);
-          if (res) {
-            setModal((prev) => !prev);
-            enqueueSnackbar("Sucessfully Created User", {
-              variant: "success",
-              anchorOrigin: {
-                vertical: "top",
-                horizontal: "right",
-              },
-            });
-          }
-        } catch (e) {
-          enqueueSnackbar("Failed to Create User", {
-            variant: "error",
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "right",
-            },
-          });
-        }
         // console.log("🚀 ~ file: UserForm.jsx:22 ~ UserForm ~ values", values);
+        const data = {
+          name: values.name,
+          discount_percentage: values.discount_percentage,
+          duration_in_days: values.duration_in_days,
+          price: values.price,
+        };
+
+        const createPackages = adminService.createPackage(dispatch, data);
+        if (createPackages) {
+          action.resetForm();
+          setOpen(true);
+          setModal((prev) => !prev);
+        }
       },
     });
+  console.log("🚀 ~ file: UserForm.jsx:30 ~ UserForm ~ errors", errors);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -107,55 +94,59 @@ const UserForm = ({ setModal }) => {
     setOpen(true);
   };
 
-  const handlename = (e) => {
-    setName(e.target.value);
-  };
-  const handlemail = (e) => {
-    setEmail(e.target.value);
-  };
-  const handlephone = (e) => {
-    setPhonenumber(e.target.value);
-  };
-  const handleemergency = (e) => {
-    setEmergency_number(e.target.value);
-  };
+  //   const handlename = (e) => {
+  //     setName(e.target.value);
+  //   };
+  //   const handlemail = (e) => {
+  //     setEmail(e.target.value);
+  //   };
+  //   const handlephone = (e) => {
+  //     setPhonenumber(e.target.value);
+  //   };
+  //   const handleemergency = (e) => {
+  //     setEmergency_number(e.target.value);
+  //   };
 
-  const handleSend = (e) => {
-    //handlesubmit work to be done
-    e.preventDefault();
-    window.location.reload();
+  //   const handleSend = (e) => {
+  //     //handlesubmit work to be done
+  //     e.preventDefault();
+  //     window.location.reload();
 
-    const url = "http://localhost:8888/users/create";
-    axios
-      .post(
-        url,
+  //     const url = "http://localhost:8888/users/create";
+  //     axios
+  //       .post(
+  //         url,
 
-        {
-          name: name,
-          phone: phonenumber,
-          email: email,
-          emergency_number: emergency_number,
-          // image: formData,
-        }
-      )
-      .then(function (response) {
-        console.log(response);
-        alert("Form submitted sucessfully");
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+  //         {
+  //           //   name: name,
+  //           //   phone: phonenumber,
+  //           //   email: email,
+  //           //   emergency_number: emergency_number,
+  //           name: name,
+  //           discount_percentage: discount_percentage,
+  //           duration_in_days: duration_in_days,
+  //           price: price,
+  //           // image: formData,
+  //         }
+  //       )
+  //       .then(function (response) {
+  //         console.log(response);
+  //         alert("Form submitted sucessfully");
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error);
+  //       });
+  //   };
 
   return (
     <Dialog fullWidth maxWidth="md" open={true}>
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom flexWrap="wrap">
           {/* {edit ? "Update Student" : "Add New Student"} */}
-          Add New User
+          Add New Package
         </Typography>
         <Typography variant="subtitle2" flexWrap="wrap">
-          Fill the below form to create a User to the site.
+          Fill the below form to create a Package to the site.
         </Typography>
       </DialogTitle>
 
@@ -190,16 +181,20 @@ const UserForm = ({ setModal }) => {
                 <Grid item xs={12}>
                   <TextField
                     size="small"
-                    error={Boolean(touched.email && errors.email)}
+                    error={Boolean(
+                      touched.discount_percentage && errors.discount_percentage
+                    )}
                     fullWidth
-                    helperText={touched.email && errors.email}
-                    label="Email"
-                    name="email"
-                    id="email"
+                    helperText={
+                      touched.discount_percentage && errors.discount_percentage
+                    }
+                    label="discount_percentage"
+                    name="discount_percentage"
+                    id="discount_percentage"
                     onBlur={handleBlur}
                     // onChange={handlemail}
                     onChange={handleChange}
-                    value={values.email}
+                    value={values.discount_percentage}
                     variant="outlined"
                   />
                 </Grid>
@@ -207,16 +202,20 @@ const UserForm = ({ setModal }) => {
                 <Grid item xs={12}>
                   <TextField
                     size="small"
-                    error={Boolean(touched.phonenumber && errors.phonenumber)}
+                    error={Boolean(
+                      touched.duration_in_days && errors.duration_in_days
+                    )}
                     fullWidth
-                    helperText={touched.phonenumber && errors.phonenumber}
-                    label="Phone Number"
-                    name="phonenumber"
-                    id="phonenumber"
+                    helperText={
+                      touched.duration_in_days && errors.duration_in_days
+                    }
+                    label="duration_in_days"
+                    name="duration_in_days"
+                    id="duration_in_days"
                     onBlur={handleBlur}
                     // onChange={handlephone}
                     onChange={handleChange}
-                    value={values.phonenumber}
+                    value={values.duration_in_days}
                     variant="outlined"
                   />
                 </Grid>
@@ -224,20 +223,16 @@ const UserForm = ({ setModal }) => {
                 <Grid item xs={12}>
                   <TextField
                     size="small"
-                    error={Boolean(
-                      touched.emergency_number && errors.emergency_number
-                    )}
+                    error={Boolean(touched.price && errors.price)}
                     fullWidth
-                    helperText={
-                      touched.emergency_number && errors.emergency_number
-                    }
-                    label="Emergency Number"
-                    name="emergency_number"
-                    id="emergency_number"
+                    helperText={touched.price && errors.price}
+                    label="price"
+                    name="price"
+                    id="price"
                     onBlur={handleBlur}
                     // onChange={handleemergency}
                     onChange={handleChange}
-                    value={values.emergency_number}
+                    value={values.price}
                     variant="outlined"
                   />
                 </Grid>
@@ -294,7 +289,7 @@ const UserForm = ({ setModal }) => {
               vertical="top"
               horizontal="right"
             >
-              <b>User is Sucessfully Created !!!</b>
+              <b>Packages is Sucessfully Created !!!</b>
               {/* {open ? {navigate("/users")} :null } */}
               {/* {navigate("/users")} */}
             </Alert>
@@ -305,4 +300,4 @@ const UserForm = ({ setModal }) => {
   );
 };
 
-export default UserForm;
+export default PackagesForm;

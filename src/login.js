@@ -9,6 +9,8 @@ import App1 from "./App1.jsx";
 import Notallowded from "./Components/Users/Notallowded.jsx";
 import { api } from "./http/api.jsx";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { userServices } from "./http/user-services.jsx";
+import { useSnackbar } from "notistack";
 
 const Container = styled.div`
   width: 100vw;
@@ -34,11 +36,16 @@ const Wrapper = styled.div`
 
 const Login = () => {
   // Inputs
+  const navigate = useNavigate();
   const [mynumber, setnumber] = useState("");
   const [otp, setotp] = useState("");
   const [show, setshow] = useState(false);
   const [final, setfinal] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  // const [user] = useAuthState(auth);
+  const [display, setDisplay] = useState(false);
+  const [notallowded, setNotallowded] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const signin = () => {
     if (mynumber === "" || mynumber.length < 10) return;
@@ -48,7 +55,14 @@ const Login = () => {
       .signInWithPhoneNumber(mynumber, verify)
       .then((result) => {
         setfinal(result);
-        alert("code sent");
+        // alert("code sent");
+        enqueueSnackbar("OTP Send Sucessfully", {
+          variant: "success",
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
         setshow(true);
         // navigate("/home");
       })
@@ -60,82 +74,136 @@ const Login = () => {
   };
 
   // Validate OTP
-  const ValidateOtp = () => {
+  const ValidateOtp = async () => {
     if (otp === null || final === null) return;
     final
       .confirm(otp)
-      .then((result) => {
+      .then(async (result) => {
         const accessToken = result.user._delegate.accessToken;
+        console.log(
+          "🚀 ~ file: login.js:70 ~ .then ~ accessToken",
+          accessToken
+        );
 
-        localStorage.setItem("accessToken", accessToken);
+        // localStorage.setItem("accessToken", accessToken);
+
         setAccessToken(accessToken);
         const number = auth.currentUser.phoneNumber;
 
-        sendData(number);
+        const res = await sendData(number, accessToken);
+        // if (user && res.data.isAdmin === true) {
+        //   // navigate("/users") ||
+        //   return <App1 />;
+        // } else {
+        //   navigate("/") || <Login />;
+        // }
+        // user && res.data.status === true ? <App1 /> : <Notallowded />;
+        function fetchData() {
+          if (res.data.status === true) {
+            // return Promise.resolve(res);
+            localStorage.setItem("accessToken", accessToken);
+            setDisplay(true);
+            enqueueSnackbar("LogIn Sucessfully", {
+              variant: "success",
+              anchorOrigin: {
+                vertical: "top",
+                horizontal: "right",
+              },
+            });
+            navigate("/");
+          } else if (res.data.status === false) {
+            setNotallowded(true);
+          }
+        }
+        fetchData();
+        console.log("🚀 ~ file: login.js:81 ~ .then ~ res", res.data.status);
+        // const res = await userServices.login(accessToken, number);
+        // console.log("resr", res);
+        // try {
+        //   const data = sendData(accessToken);
+        //   console.log(data);
+        // } catch (err) {
+        //   console.log(err);
+        // }
       })
       .catch((err) => {
-        alert("Wrong code");
+        // alert("Wrong code");s
+        setNotallowded(true);
       });
   };
 
   return (
-    <Container>
-      <Wrapper>
-        <div style={{ marginTop: "30px" }}>
-          <center>
-            <div style={{ display: !show ? "block" : "none" }}>
-              <h1>Please Enter Your Phone Number</h1>
-              <input
-                value={mynumber}
-                onChange={(e) => {
-                  setnumber(e.target.value);
-                }}
-                style={{ borderRadius: "10px", marginTop: "10px" }}
-                placeholder="+977 "
-              />
-              <br />
-              <br />
-              <div id="recaptcha-container"></div>
-              <button
-                onClick={signin}
-                style={{
-                  borderRadius: "5px",
-                  backgroundColor: "grey",
-                  color: "white",
-                  cursor: "pointer",
-                }}
-              >
-                Send OTP
-              </button>
-            </div>
-            <div style={{ display: show ? "block" : "none" }}>
-              <h1>Please Enter Your OTP</h1>
-              <input
-                type="text"
-                placeholder={"Enter your OTP"}
-                onChange={(e) => {
-                  setotp(e.target.value);
-                }}
-                style={{ borderRadius: "10px", marginTop: "10px" }}
-              ></input>
-              <br />
-              <br />
-              <button
-                onClick={ValidateOtp}
-                style={{
-                  borderRadius: "5px",
-                  backgroundColor: "grey",
-                  color: "white",
-                  cursor: "pointer",
-                }}
-              >
-                Verify
-              </button>
-            </div>
-          </center>
-        </div>
-      </Wrapper>
-    </Container>
+    <>
+      {display ? (
+        <App1 />
+      ) : (
+        <>
+          {notallowded ? (
+            <Notallowded />
+          ) : (
+            <>
+              <Container>
+                <Wrapper>
+                  <div style={{ marginTop: "30px" }}>
+                    <center>
+                      <div style={{ display: !show ? "block" : "none" }}>
+                        <h1>Please Enter Your Phone Number</h1>
+                        <input
+                          value={mynumber}
+                          onChange={(e) => {
+                            setnumber(e.target.value);
+                          }}
+                          style={{ borderRadius: "10px", marginTop: "10px" }}
+                          placeholder="+977 "
+                        />
+                        <br />
+                        <br />
+                        <div id="recaptcha-container"></div>
+                        <button
+                          onClick={signin}
+                          style={{
+                            borderRadius: "5px",
+                            backgroundColor: "grey",
+                            color: "white",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Send OTP
+                        </button>
+                      </div>
+                      <div style={{ display: show ? "block" : "none" }}>
+                        <h1>Please Enter Your OTP</h1>
+                        <input
+                          type="text"
+                          placeholder={"Enter your OTP"}
+                          onChange={(e) => {
+                            setotp(e.target.value);
+                          }}
+                          style={{ borderRadius: "10px", marginTop: "10px" }}
+                        ></input>
+                        <br />
+                        <br />
+                        <button
+                          onClick={ValidateOtp}
+                          style={{
+                            borderRadius: "5px",
+                            backgroundColor: "grey",
+                            color: "white",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Verify
+                        </button>
+                      </div>
+                    </center>
+                  </div>
+                </Wrapper>
+              </Container>
+            </>
+          )}
+        </>
+      )}
+    </>
   );
 };
 

@@ -21,8 +21,16 @@ import LoyaltyIcon from "@mui/icons-material/Loyalty";
 // import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import InventoryIcon from "@mui/icons-material/Inventory";
-
-import { auth } from "../../firebase_config.js";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, firebase } from "../../firebase_config";
+import LogoutIcon from "@mui/icons-material/Logout";
+// import firebase from "firebase";
+// import { auth } from "../../firebase_config.js";
+// import { firebase } from "./firebase_config";
+import Login from "../../login";
+import { useSnackbar } from "notistack";
+import { Stack } from "@mui/system";
+import LogoutDailog from "./logoutDailog";
 
 const drawerWidth = 240;
 
@@ -104,9 +112,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function Slider() {
+  const [open, setOpen] = React.useState(false);
+  const [logout, setLogout] = React.useState(false);
+  const [user] = useAuthState(auth);
+  const [logoutDailog, setLogoutDailog] = React.useState(false);
+  const [modalState, setModalState] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -115,124 +128,193 @@ export default function Slider() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const logout = () => {
-    auth.signOut();
-    localStorage.removeItem("accessToken");
+  const logOut = () => {
+    setLogoutDailog(true);
+    setModalState(!modalState);
+  };
+  const Logout = async (e) => {
+    /*
+    // firebase
+    // .auth()
+    auth
+      .signOut()
+      .then(() => {
+        localStorage.removeItem("accessToken");
+        console.log("out");
+        // setLogout(true);
+        // navigate("/");
+        // alert("sucessfully logged out");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+*/
+
+    e.preventDefault();
+
+    await firebase
+      .auth()
+      .signOut()
+      .then(function () {
+        // console.log("Successfully signed out.");
+        localStorage.removeItem("accessToken");
+        enqueueSnackbar("Log Out Sucessfully", {
+          variant: "success",
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
+
+        navigate("/login");
+      })
+      .catch(function (error) {
+        // console.log(error);
+        // console.log("An error occurred");
+      });
+
+    // this.props.history.push("/");
+    // navigate("/login");
+
+    // if (user) {
+    // alert("clicked");
+    // auth.signOut();
+    // navigate("/");
+    // setLogout(true);
+    // }
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open} sx={{ background: "#F3F7F8" }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }), color: "red" }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ color: "#00A36C" }}
-          >
-            GYM APP
-          </Typography>
+    <>
+      {/* {logout ? (
+        <Login />
+      ) : (
+        <> */}
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open} sx={{ background: "#F3F7F8" }}>
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
 
-          {/* <IconButton
-            color="inherit"
-            sx={{
-              color: "red",
-              alignItems: "right",
-            }}
+            // sx={boxDefault}
           >
-            <PersonIcon />
-          </IconButton> */}
-          {/* <button style={{ marginLeft: "20px" }} onClick={logout}>
-            Logout
-          </button> */}
-          <Button
-            sx={{ mt: { xs: 10, sm: 0 } }}
-            onClick={logout}
-            variant="outlined"
-          >
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton
-            onClick={handleDrawerClose}
-            sx={{
-              color: "red",
-            }}
-          >
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List
-          sx={{
-            height: "100%",
-            background: "#F3F7FB",
-          }}
-        >
-          {data.map((item) => (
-            <ListItem key={item.title} disablePadding>
-              <ListItemButton
-                onClick={() => navigate(item.Link)}
-                style={{ gap: "10px" }}
+            <Stack
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{
+                  // mr: 2,
+                  width: "fit-content",
+
+                  color: "red",
+                }}
               >
-                {/* <ListItemIcon /> */}
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                sx={{ color: "#00A36C" }}
+              >
+                GYM APP
+              </Typography>
+            </Stack>
 
-                {/* <ListItemText primary={item.title}  /> */}
-                {/* <ListItemText> */}
-                <Button
-                  size="large"
-                  sx={{ color: "#00A36C" }}
-                  // onClick={item.Link}
-                  // onClick={() => navigate(item.Link)}
+            <LogoutIcon
+              sx={{ color: "red ", cursor: "pointer" }}
+              color="red "
+              // onClick={Logout}
+              onClick={logOut}
+            />
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
+          }}
+          variant="persistent"
+          anchor="left"
+          open={open}
+        >
+          <DrawerHeader>
+            <IconButton
+              onClick={handleDrawerClose}
+              sx={{
+                color: "red",
+              }}
+            >
+              {theme.direction === "ltr" ? (
+                <ChevronLeftIcon />
+              ) : (
+                <ChevronRightIcon />
+              )}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <List
+            sx={{
+              height: "100%",
+              background: "#F3F7FB",
+            }}
+          >
+            {data.map((item) => (
+              <ListItem key={item.title} disablePadding>
+                <ListItemButton
+                  onClick={() => navigate(item.Link)}
+                  style={{ gap: "10px" }}
                 >
-                  {item.icon}
-                  <Typography variant="subtitle1" ml={2}>
-                    {item.title}
-                  </Typography>
-                </Button>
-                {/* </ListItemText> */}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-      </Drawer>
-      <Main open={open}>
-        <DrawerHeader />
-        {/* <Typography paragraph>Lorem ipsum dolor sit amet</Typography> */}
-        {/* <MainContent> */}
-        <Outlet />
-        {/* </MainContent> */}
-      </Main>
-    </Box>
+                  {/* <ListItemIcon /> */}
+
+                  {/* <ListItemText primary={item.title}  /> */}
+                  {/* <ListItemText> */}
+                  <Button
+                    size="large"
+                    sx={{ color: "#00A36C" }}
+                    // onClick={item.Link}
+                    // onClick={() => navigate(item.Link)}
+                  >
+                    {item.icon}
+                    <Typography variant="subtitle1" ml={2}>
+                      {item.title}
+                    </Typography>
+                  </Button>
+                  {/* </ListItemText> */}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
+        <Main open={open}>
+          <DrawerHeader />
+          {/* <Typography paragraph>Lorem ipsum dolor sit amet</Typography> */}
+          {/* <MainContent> */}
+          <Outlet />
+          {/* </MainContent> */}
+        </Main>
+      </Box>
+      {modalState && (
+        <LogoutDailog logout={logoutDailog} setModal={setModalState} />
+      )}
+    </>
+    //   )}
+    // </>
   );
 }

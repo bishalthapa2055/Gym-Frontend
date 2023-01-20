@@ -28,32 +28,33 @@ const DialogWrapper = experimentalStyled(Dialog)(
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const DeleteUserForm = ({ id, setModal, user }) => {
-  // const { enqueSnackbar } = useSnackbar();
 
-  const [open, setOpen] = React.useState(false);
+const DeleteMembershipForm = ({ id, membership, setModal }) => {
+  // const { enqueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const [open, setOpen] = React.useState(false);
+
+  const [openn, setOpenn] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  const deleteConfirm = async (event) => {
-    // e.preventDefault();
-    // event.preventDefault();
-    console.log("[id]", id);
+  const deleteConfirm = (e) => {
     try {
-      const res = await adminService.deleteUsers(dispatch, id);
+      const res = adminService.deleteMemberships(dispatch, id);
       if (res) {
+        // console.log(res);
         // setOpen(true);
-        setModal((model) => !model);
-        enqueueSnackbar("Sucessfully Deleted User", {
+        enqueueSnackbar("Sucessfully Deleted Membership", {
           variant: "success",
           anchorOrigin: {
             vertical: "top",
             horizontal: "right",
           },
         });
+        setModal((prev) => !prev);
+        // setOpenn(true);
       }
-    } catch (err) {
-      enqueueSnackbar("Failed to Delete User", {
+    } catch (e) {
+      enqueueSnackbar("Failed to Delete Membership", {
         variant: "error",
         anchorOrigin: {
           vertical: "top",
@@ -61,14 +62,8 @@ const DeleteUserForm = ({ id, setModal, user }) => {
         },
       });
     }
-
-    // const url = `users/${id}`;
-
-    // const res = api.delete(url);
-    // if (res) {
-    //   setOpen(true);
-    // }
   };
+
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -80,7 +75,9 @@ const DeleteUserForm = ({ id, setModal, user }) => {
     <DialogWrapper open={true} maxWidth="sm" fullWidth keepMounted>
       <Stack alignItems="center" justifyContent="center" p={3}>
         <Typography align="center" variant="h6">
-          Do you want to delete User : <b> {user.name} </b>permanently ?
+          Do you want to Delete Memebership of <b>{membership?.userId?.name}</b>{" "}
+          of :<b> {membership?.package?.name} </b>
+          permanently ?
         </Typography>
 
         <Grid container mt={3}>
@@ -102,6 +99,7 @@ const DeleteUserForm = ({ id, setModal, user }) => {
             >
               Confirm
             </Button>
+
             <Snackbar
               open={open}
               autoHideDuration={5000}
@@ -115,7 +113,10 @@ const DeleteUserForm = ({ id, setModal, user }) => {
                 vertical="top"
                 horizontal="right"
               >
-                <b>{user.name} Deleted Sucessfully !!!</b>
+                <b>
+                  {membership?.userId?.name} Membership is Deleted Sucessfully
+                  !!!
+                </b>
               </Alert>
             </Snackbar>
           </Grid>
@@ -125,4 +126,4 @@ const DeleteUserForm = ({ id, setModal, user }) => {
   );
 };
 
-export default DeleteUserForm;
+export default DeleteMembershipForm;

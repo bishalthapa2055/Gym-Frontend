@@ -28,32 +28,45 @@ const DialogWrapper = experimentalStyled(Dialog)(
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const DeleteUserForm = ({ id, setModal, user }) => {
-  // const { enqueSnackbar } = useSnackbar();
 
-  const [open, setOpen] = React.useState(false);
+const DeletePackagesForm = ({ id, setModal, packages }) => {
+  // const { enqueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const [open, setOpen] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  const deleteConfirm = async (event) => {
+  const deleteConfirm = (e) => {
     // e.preventDefault();
-    // event.preventDefault();
-    console.log("[id]", id);
+    // e.preventDefault();
+    setOpen(true);
+    // const url = `http://localhost:8888/package/packages/${id}`;
+    // axios
+    //   .delete(url)
+    //   .then(function (response) {
+    //     console.log(response);
+
+    //     // useNavigate()
+    //     // alert("Form Updated Sucessfully");
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+    const res = adminService.deletePackage(dispatch, id);
+
     try {
-      const res = await adminService.deleteUsers(dispatch, id);
       if (res) {
         // setOpen(true);
-        setModal((model) => !model);
-        enqueueSnackbar("Sucessfully Deleted User", {
+        enqueueSnackbar("Sucessfully Deleted Package", {
           variant: "success",
           anchorOrigin: {
             vertical: "top",
             horizontal: "right",
           },
         });
+        setModal((model) => !model);
       }
-    } catch (err) {
-      enqueueSnackbar("Failed to Delete User", {
+    } catch (e) {
+      enqueueSnackbar("Failed to  Deleted Membership", {
         variant: "error",
         anchorOrigin: {
           vertical: "top",
@@ -61,13 +74,6 @@ const DeleteUserForm = ({ id, setModal, user }) => {
         },
       });
     }
-
-    // const url = `users/${id}`;
-
-    // const res = api.delete(url);
-    // if (res) {
-    //   setOpen(true);
-    // }
   };
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -80,7 +86,7 @@ const DeleteUserForm = ({ id, setModal, user }) => {
     <DialogWrapper open={true} maxWidth="sm" fullWidth keepMounted>
       <Stack alignItems="center" justifyContent="center" p={3}>
         <Typography align="center" variant="h6">
-          Do you want to delete User : <b> {user.name} </b>permanently ?
+          Do you want to delete Package : <b> {packages.name} </b>permanently ?
         </Typography>
 
         <Grid container mt={3}>
@@ -115,7 +121,7 @@ const DeleteUserForm = ({ id, setModal, user }) => {
                 vertical="top"
                 horizontal="right"
               >
-                <b>{user.name} Deleted Sucessfully !!!</b>
+                <b>{packages.name} Deleted Sucessfully !!!</b>
               </Alert>
             </Snackbar>
           </Grid>
@@ -125,4 +131,4 @@ const DeleteUserForm = ({ id, setModal, user }) => {
   );
 };
 
-export default DeleteUserForm;
+export default DeletePackagesForm;

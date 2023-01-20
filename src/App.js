@@ -1,37 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "./firebase_config.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Login from "./login.js";
-
+import { api } from "./http/api.jsx";
 import App1 from "./App1.jsx";
+import { useSnackbar } from "notistack";
+// let status = false;
+// status = localStorage.getItem("accessToken") ? true : false;
+// console.log(status);
+
 function App() {
-  const [user] = useAuthState(auth);
-  // console.log(user);
+  const [status, setStatus] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  // const [user] = useAuthState(auth);
+  useEffect(() => {
+    const fetchData = async () => {
+      // try {
+      const data = await api.get("/isAdmin");
 
-  // return user ? <Mainpage /> : <Login />;
-  return user ? <App1 /> : <Login />;
-  // return <Login />;
-  //   if user  {
-  //     if ($response.role=="user")
-  //     {
-  //       return user page /rediect to user page url
-  //     }
-  //     else
-  //     return admin page /refirect to admin page url
-  //   }
-  //   else (user = 0)
-  //   {
-  //     redirect to login page
-  //   }
-  // }
+      const status = data?.status;
+      if (status) {
+        setStatus(true);
+      }
+      //  else {
+      //   enqueueSnackbar("Connection Timed Out !! LogIn Again", {
+      //     variant: "error",
+      //     anchorOrigin: {
+      //       vertical: "top",
+      //       horizontal: "right",
+      //     },
+      //   });
+      //   localStorage.removeItem("accessToken");
+      // }
+      // } catch (e) {
+      //   enqueueSnackbar("Connection Timed Out !! LogIn Again", {
+      //     variant: "error",
+      //     anchorOrigin: {
+      //       vertical: "top",
+      //       horizontal: "right",
+      //     },
+      //   });
+      // localStorage.removeItem("accessToken");
+      // }
+    };
+    fetchData();
+  }, []);
 
-  // const App = () => {
-  //   return (
-  //     <div>
-  //       <Header />
-  //       <Slider />
-  //     </div>
-  //   );
-  // };
+  return (
+    <>
+      {/* <Login />; */}
+
+      {status ? <App1 /> : <Login />}
+    </>
+  );
 }
 export default App;

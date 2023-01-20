@@ -17,51 +17,36 @@ import MuiAlert from "@mui/material/Alert";
 import { api } from "../../http/api";
 import { adminService } from "../../http/admin-services";
 import { useDispatch } from "react-redux";
-import { useSnackbar } from "notistack";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const EditUserForm = ({ edit, id, setModal, user }) => {
+const EditPackagesForm = ({ edit, id, setModal, packages }) => {
   const [open, setOpen] = React.useState(false);
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [phonenumber, setPhonenumber] = useState(user.phone);
-  const [emergency_number, setEmergency_number] = useState(
-    user.emergency_number
+  const [name, setName] = useState(packages.name);
+  const [discountedPercentage, setDiscountedPercentage] = useState(
+    packages.discount_percentage
   );
+  const [durationinDays, setDurationinDays] = useState(
+    packages.duration_in_days
+  );
+  const [price, setPrice] = useState(packages.price);
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+
   const handlename = (e) => {
     setName(e.target.value);
   };
-  const handlemail = (e) => {
-    setEmail(e.target.value);
+  const handlediscountpercentage = (e) => {
+    setDiscountedPercentage(e.target.value);
   };
-  const handlephone = (e) => {
-    setPhonenumber(e.target.value);
+  const handledurationindays = (e) => {
+    setDurationinDays(e.target.value);
   };
-  const handleemergency = (e) => {
-    setEmergency_number(e.target.value);
+  const handleprice = (e) => {
+    setPrice(e.target.value);
   };
 
-  //   const handleBlur = (e) => {
-  //     setName(e.target.value);
-  //   };
-  // for snackbar
-  //   const [open, setOpen] = React.useState(false);
-  //   const handleqqqClose = (event, reason) => {
-  //     if (reason === "clickaway") {
-  //       return;
-  //     }
-
-  //     setOpen(false);
-  //   };
-
-  // const deleteConfirm = () => {
-  //   setOpen(true);
-  // };
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -73,64 +58,62 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
     // window.location.reload();
     // e.stopImmediatePropagation();
     console.log("click");
-    // const url = `http://localhost:8888/users/update/${id}`;
+
+    /*
+    setOpen(true);
+    const url = `http://localhost:8888/package/packages/${id}`;
     // const url = `/update/${id}`;
-    // const res = api
-    //   .patch(url, {
-    //     name: name,
-    //     phone: phonenumber,
-    //     email: email,
-    //     emergency_number: emergency_number,
-    //   })
-    //   .then(function (response) {
-    //     console.log(response);
-    //     // useNavigate()
-    //     // alert("Form Updated Sucessfully");
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   });
-    const fetchdata = async () => {
-      // const url = `/users/${id}`;
-      // const res = await api.patch(url, {
-      //   name: name,
-      //   phone: phonenumber,
-      //   email: email,
-      //   emergency_number: emergency_number,
-      // });
-      const datas = {
+    const res = api
+      .patch(url, {
         name: name,
-        phone: phonenumber,
-        email: email,
-        emergency_number: emergency_number,
+        discount_percentage: discountedPercentage,
+        duration_in_days: durationinDays,
+        price: price,
+      })
+      .then(function (response) {
+        console.log(response);
+        // useNavigate()
+        // alert("Form Updated Sucessfully");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+      */
+
+    const fetchData = async () => {
+      const values = {
+        name: name,
+        discount_percentage: discountedPercentage,
+        duration_in_days: durationinDays,
+        price: price,
       };
-      const res = await adminService.updateUsers(dispatch, id, datas);
-      try {
-        if (res) {
-          setOpen(true);
-          setModal((prev) => !prev);
-          enqueueSnackbar("Sucessfully Updated User", {
-            variant: "success",
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "right",
-            },
-          });
-          // setPackages(res.data);
-          // setLoading(false);
-        }
-      } catch (e) {
-        enqueueSnackbar("Failed to Update User", {
-          variant: "error",
-          anchorOrigin: {
-            vertical: "top",
-            horizontal: "right",
-          },
-        });
+      const res = adminService.updatePackage(dispatch, id, values);
+      console.log("🚀 ~ file: EditPackagesForm.jsx:92 ~ fetchData ~ res", res);
+
+      if (res) {
+        setOpen(true);
+        setModal((prev) => !prev);
       }
     };
+    fetchData();
+    // const fetchdata = async () => {
+    //   const url = `/users/${id}`;
+    //   const res = await api.patch(url, {
+    //     name: name,
+    //     discount_percentage: discountedPercentage,
+    //     duration_in_days: durationinDays,
+    //     price: price,
+    //   });
+    //   if (res) {
+    //     setOpen(true);
+    //     // setPackages(res.data);
+    //     // setLoading(false);
+    //   }
+    // };
 
-    fetchdata();
+    // fetchdata();
+
     // axios
     //   .patch(url, {
     //     name: name,
@@ -174,7 +157,7 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
                     // helperText={touched.name && errors.name}
                     label="Name"
                     name="name"
-                    placeholder={user.name}
+                    placeholder={packages.name}
                     // onBlur={handleBlur}
                     onChange={handlename}
                     // onBlur={handleBlur}
@@ -188,12 +171,12 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
                     // error={Boolean(touched.email && errors.email)}
                     fullWidth
                     // helperText={touched.email && errors.email}
-                    label="Email"
-                    name="email"
+                    label="Discount percentage"
+                    name="discount_percentage"
                     // onBlur={handleBlur}
-                    onChange={handlemail}
-                    placeholder={email}
-                    value={email}
+                    onChange={handlediscountpercentage}
+                    placeholder={packages.discountedPercentage}
+                    value={discountedPercentage}
                     variant="outlined"
                   />
                 </Grid>
@@ -204,12 +187,12 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
                     //   error={Boolean(touched.password && errors.password)}
                     fullWidth
                     //   helperText={touched.password && errors.password}
-                    label="Phone Number"
-                    name="phonenumber"
+                    label="Duration in days"
+                    name="durationinDays"
                     //   onBlur={handleBlur}
-                    onChange={handlephone}
-                    value={phonenumber}
-                    placeholder={user.phone}
+                    onChange={handledurationindays}
+                    value={durationinDays}
+                    placeholder={packages.durationinDays}
                     variant="outlined"
                   />
                 </Grid>
@@ -218,11 +201,11 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    label="Emergency Number"
-                    name="emergency_number"
-                    onChange={handleemergency}
-                    value={emergency_number}
-                    placeholder={user.emergency_number}
+                    label="price"
+                    name="price"
+                    onChange={handleprice}
+                    value={price}
+                    placeholder={packages.price}
                     variant="outlined"
                   />
                 </Grid>
@@ -238,26 +221,26 @@ const EditUserForm = ({ edit, id, setModal, user }) => {
           <Button type="submit" variant="contained">
             Edit
           </Button>
-          <Snackbar
-            open={open}
-            autoHideDuration={5000}
-            onClose={handleClose}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            <Alert
-              onclose={handleClose}
-              severity="success"
-              sx={{ width: "100%" }}
-              vertical="top"
-              horizontal="right"
-            >
-              <b>{user.name} is Sucessfully Updated!!!</b>
-            </Alert>
-          </Snackbar>
         </DialogActions>
+        <Snackbar
+          open={open}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert
+            onclose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+            vertical="top"
+            horizontal="right"
+          >
+            <b>{packages.name} is Sucessfully Updated!!!</b>
+          </Alert>
+        </Snackbar>
       </form>
     </Dialog>
   );
 };
 
-export default EditUserForm;
+export default EditPackagesForm;

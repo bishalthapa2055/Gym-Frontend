@@ -1,19 +1,31 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
+import { Box, Stack, TableCell } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+// import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Typography from "@mui/material/Typography";
+import EditIcon from "@mui/icons-material/Edit";
+import { useDispatch, useSelector } from "react-redux";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+
+// import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import { api } from "../http/api";
 import axios from "axios";
+import Progress from "./Progress";
+
+import Header from "./Packages/index";
+import EditPackagesForm from "./Packages/EditPackagesForm";
+import DeletePackagesForm from "./Packages/DeletePackagesForm";
+import CustomizedMenus from "./Packages/options";
+import UpdateStatus from "./Packages/UpdateStatus";
+import { adminService } from "../http/admin-services";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -33,8 +45,9 @@ function getComparator(order, orderBy) {
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
+
 function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const stabilizedThis = array?.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) {
@@ -69,6 +82,18 @@ const headCells = [
     numeric: true,
     disablePadding: false,
     label: "PRICE ( RS )",
+  },
+  {
+    id: "status",
+    numeric: false,
+    disablePadding: false,
+    label: "STATUS",
+  },
+  {
+    id: "operation",
+    numeric: true,
+    disablePadding: false,
+    label: "OPERATIONS",
   },
 ];
 
@@ -142,6 +167,18 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [packages, setPackages] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [modalState, setModalState] = React.useState(false);
+  const [packagesId, setPackagesId] = React.useState("");
+  const [currentPackages, setCurrentPackages] = React.useState("");
+  const [deleteDailog, setDeleteDailog] = React.useState(false);
+  const [optionId, setOptionId] = React.useState("");
+
+  const [packagesStatus, setPackagesStatus] = React.useState();
+  const [updateStatusModel, setUpdateStatusModel] = React.useState(false);
+
+  const dispatch = useDispatch();
+  const packagesDetails = useSelector((state) => state.packages.packages);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -151,7 +188,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = packages.map((n) => n.name);
+      const newSelected = packagesDetails.map((n) => n.name);
       setSelected(newSelected);
       return;
     }
@@ -187,102 +224,269 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
+  const openEditPackagesForm = (id, packages) => {
+    setPackagesId(id);
+    setModalState(!modalState);
+    setCurrentPackages(packages);
+  };
+  const openDeletePackagesDialog = (id, packages) => {
+    setPackagesId(id);
+    setCurrentPackages(packages);
+    setDeleteDailog(!modalState);
+  };
+
+  const closeModel = () => {
+    setUpdateStatusModel((prev) => !prev);
+  };
+
+  // const updateClass = async (id, packagesStatus) => {
+  //   try {
+  //     // const id = optionId;
+  //     const url = `http://localhost:8888/package/packages/${id}`;
+  //     console.log(
+  //       "🚀 ~ file: Packages.jsx:237 ~ updateClass ~ packagesStatus",
+  //       packagesStatus
+  //     );
+
+  //     console.log(
+  //       "🚀 ~ file: Packages.jsx:240 ~ updateClass ~ optionId",
+  //       optionId
+  //     );
+  //     await axios.patch(url, {
+  //       status: packagesStatus,
+  //     });
+  //     setUpdateStatusModel((prev) => !prev);
+  //   } catch (error) {
+  //     // enqueueSnackbar("Failed to update class", {
+  //     //   variant: "error",
+  //     //   anchorOrigin: {
+  //     //     vertical: "top",
+  //     //     horizontal: "right",
+  //     //   },
+  //     // });
+  //     console.log(error);
+  //   }
+  // };
   // const fetchdata = async () => {
   //   const data = await api.get("/packages");
   //   console.log("packages", data);
   // };
   // fetchdata();
   React.useEffect(() => {
-    axios
-      .get("http://localhost:8888/package/packages")
-      .then((res) => setPackages(res.data.data) && console.log("res", res))
-      .catch((err) => console.log(err));
-  }, []);
+    // setTimeout(() => {
+    // axios
+    //   .get("http://localhost:8888/package/packages")
+    //   .then((res) => setPackages(res.data.data) && console.log("res", res))
+    //   .catch((err) => console.log(err))
+    //   .finally(() => setLoading(false));
+    adminService.getPackages(dispatch);
+    setLoading(false);
+    // }, 1000);
+  }, [dispatch]);
+  // React.useEffect(() => {
+  // const fetchdata = async () => {
+  // const res = await adminService.getUser();
+  // console.log(res);
+  // setLoading(true);
+  // const fetchdata = async () => {
+  //   const res = await api.get("/packages");
+  //   if (res) {
+  //     setPackages(res.data);
+  //     setLoading(false);
+  //   }
+
+  // .then((res) => setUsers(res.data.data))
+  // .catch((err) => console.log(err))
+  // .finally(() => setLoading(false));
+  // };
+
+  // fetchdata();
+  // },
+  // }, []);
 
   console.log(packages);
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   return (
-    <Box sx={{ width: "80%" }}>
-      <Typography
-        sx={{ flex: "1 1 100%", color: "red" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-        m={2}
-      >
-        Lists of Packages
-      </Typography>
-      <Paper sx={{ width: "100%", mb: 2, backgroundColor: "#C4FAC3" }}>
-        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            // size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              // numSelected={selected.length}
-              sx={{ backgroundColor: "#EDF3E8" }}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={packages.length}
-            />
-            <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.sort(getComparator(order, orderBy)).slice() */}
-              {stableSort(packages, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+    <>
+      {loading ? (
+        <Progress />
+      ) : (
+        <>
+          <Box sx={{ width: "95%" }}>
+            {/* <Typography
+              variant="h6"
+              component="h6"
+              m={2}
+              gutterBottom
+              // sx={{ color: "#FA3322" }}
+            >
+              Lists of Availabe Packages
+            </Typography> */}
+            {/* <packagesHeader /> */}
+            {/* <packagesHeader /> */}
+            <Header />
+            <Paper
+              sx={{
+                width: "100%",
+                mb: 2,
+                backgroundColor: "#C4FAC3",
+              }}
+            >
+              {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.name)}
-                      // role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      // selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox"></TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.discount_percentage}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.duration_in_days}
-                      </TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={packages.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ backgroundColor: "#D8E6CC" }}
-        />
-      </Paper>
-    </Box>
+              <TableContainer>
+                <Table
+                  sx={{ minWidth: 750 }}
+                  aria-labelledby="tableTitle"
+                  // size={dense ? 'small' : 'medium'}
+                >
+                  <EnhancedTableHead
+                    // numSelected={selected.length}
+                    sx={{ backgroundColor: "#EDF3E8" }}
+                    order={order}
+                    orderBy={orderBy}
+                    onSelectAllClick={handleSelectAllClick}
+                    onRequestSort={handleRequestSort}
+                    rowCount={packagesDetails.length}
+                  />
+                  <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
+                    {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+                 rows.sort(getComparator(order, orderBy)).slice() */}
+                    {packagesDetails &&
+                      packagesDetails.length &&
+                      stableSort(packagesDetails, getComparator(order, orderBy))
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        ?.map((row, index) => {
+                          const isItemSelected = isSelected(row.id);
+                          const labelId = `enhanced-table-checkbox-${index}`;
+
+                          return (
+                            <TableRow
+                              hover
+                              onClick={(event) => handleClick(event, row.name)}
+                              // role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              key={row.id}
+                              // selected={isItemSelected}
+                            >
+                              <TableCell padding="checkbox"></TableCell>
+                              <TableCell
+                                component="th"
+                                id={labelId}
+                                scope="row"
+                                padding="none"
+                              >
+                                {row.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {row.discount_percentage}
+                              </TableCell>
+                              <TableCell align="right">
+                                {row.duration_in_days}
+                              </TableCell>
+                              <TableCell align="right">{row.price}</TableCell>
+                              <TableCell align="center">
+                                {/* {row.status} */}
+                                {/* <CustomizedMenus /> */}
+                                <select
+                                  value={row.status}
+                                  onChange={(e) => {
+                                    setOptionId(row.id);
+                                    console.log(row.id);
+                                    setPackagesStatus(e.target.value);
+                                    setUpdateStatusModel(true);
+                                  }}
+                                >
+                                  <option value="draft">Draft</option>
+                                  <option value="published">Published</option>
+                                </select>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Stack
+                                  direction="row"
+                                  alignItems="right"
+                                  spacing={3}
+                                  display="flex"
+                                >
+                                  <EditIcon
+                                    sx={{
+                                      "& :hover": { color: "red" },
+                                      cursor: "pointer",
+                                      color: "blue",
+                                    }}
+                                    onClick={
+                                      () => openEditPackagesForm(row.id, row)
+                                      // alert("hello")
+                                      // console.log(row._id, row)
+                                    }
+                                  />
+                                  <DeleteOutlineOutlinedIcon
+                                    sx={{
+                                      "& :hover": { color: "red" },
+                                      cursor: "pointer",
+                                      color: "red",
+                                    }}
+                                    onClick={
+                                      () =>
+                                        openDeletePackagesDialog(row.id, row)
+                                      // alert("hello")
+                                    }
+                                  />
+                                </Stack>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={packagesDetails ? packagesDetails.length : null}
+                // count={packagesDetails.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{ backgroundColor: "#D8E6CC" }}
+              />
+              {modalState && (
+                <EditPackagesForm
+                  edit={true}
+                  id={packagesId}
+                  setModal={setModalState}
+                  packages={currentPackages}
+                />
+              )}
+
+              {deleteDailog && (
+                <DeletePackagesForm
+                  id={packagesId}
+                  setModal={setDeleteDailog}
+                  packages={currentPackages}
+                />
+              )}
+            </Paper>
+
+            {updateStatusModel && (
+              <UpdateStatus
+                closeFunction={closeModel}
+                // updateFunction={optionId}
+                setModel={updateStatusModel}
+                id={optionId}
+                status={packagesStatus}
+              />
+            )}
+          </Box>
+        </>
+      )}
+    </>
   );
 }

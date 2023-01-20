@@ -13,33 +13,17 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import axios from "axios";
-
-function createData(name, calories, fat, carbs, carb) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    carb,
-  };
-}
-
-const rows = [
-  createData("Cupcake", 305, 3.7, 6, 2222),
-  createData("Donut", 452, 25.0, 51),
-  createData("Eclair", 262, 16.0, 24),
-  createData("Frozen yoghurt", 159, 6.0, 24),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Honeycomb", 408, 3.2, 8),
-  createData("Ice cream sandwich", 237, 9.0, 37),
-  createData("Jelly Bean", 375, 0.0, 94),
-  createData("KitKat", 518, 26.0, 65),
-  createData("Lollipop", 392, 0.2, 98.0, 444),
-  createData("Marshmallow", 318, 0, 81.0),
-  createData("Nougat", 360, 19.0, 97.0),
-  createData("Oreo", 437, 18.0, 63),
-];
-
+import { FlashOffOutlined } from "@mui/icons-material";
+import { api } from "../http/api";
+import Header from "./Membership/Header";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import { Stack } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import DeleteMembershipForm from "./Membership/DeleteMembershipForm";
+import { adminService } from "../http/admin-services";
+import EditMembershipForm from "./Membership/EditMembershipForm";
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -78,34 +62,40 @@ const headCells = [
     label: "NAME",
   },
   {
-    id: "calories",
-    numeric: true,
+    id: "packname",
+    numeric: FlashOffOutlined,
     disablePadding: false,
     label: "PACKAGE NAME",
   },
   {
-    id: "fat",
-    numeric: true,
+    id: "pay",
+    numeric: false,
     disablePadding: false,
     label: "PAYMENT",
   },
   {
-    id: "carbs",
+    id: "start",
     numeric: true,
     disablePadding: false,
     label: "START DATE",
   },
   {
-    id: "carb",
+    id: "end",
     numeric: true,
     disablePadding: false,
     label: "END DATE",
   },
   {
-    id: "carby",
+    id: "amt",
     numeric: true,
     disablePadding: false,
     label: "AMOUNT",
+  },
+  {
+    id: "oper",
+    numeric: false,
+    disablePadding: false,
+    label: "OPERATION",
   },
 ];
 
@@ -157,26 +147,42 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-function EnhancedTableToolbar(props) {
-  return (
-    <Typography
-      sx={{ flex: "1 1 100%" }}
-      variant="h6"
-      id="tableTitle"
-      component="div"
-    >
-      Nutrition
-    </Typography>
-  );
-}
+// function EnhancedTableToolbar(props) {
+//   return (
+//     // <Typography
+//     //   sx={{ flex: "1 1 100%" }}
+//     //   variant="h6"
+//     //   id="tableTitle"
+//     //   component="div"
+//     // >
+//     //   Nutrition
+//     // </Typography>
+//     // <Typography variant="h6" component="h6" gutterBottom>
+//     //   Memberships Details
+//     // </Typography>
+
+//     // import { Button, Typography, Grid } from "@mui/material";
+//   );
+// }
 
 export default function EnhancedTable() {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
   const [memberships, setMemberships] = React.useState([]);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [membershipId, setMembershipId] = React.useState();
+  const [currentmembership, setCurrentMembership] = React.useState();
+  const [modalState, setModalState] = React.useState(false);
+  const [deleteDailog, setDeleteDailog] = React.useState(false);
+  const [editDailog, setEditDailog] = React.useState(false);
+
+  const dispatch = useDispatch();
+  const membershipDetails = useSelector(
+    (state) => state.memberships.memberships
+  );
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -186,7 +192,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = memberships.map((n) => n.name);
       setSelected(newSelected);
       return;
     }
@@ -222,22 +228,41 @@ export default function EnhancedTable() {
     setPage(0);
   };
   React.useEffect(() => {
-    axios
-      .get("http://localhost:8888/membership/memberships")
-      .then((res) => setMemberships(res.data.data))
-      .catch((err) => console.log(err));
-  }, []);
-  console.log(memberships);
+    // axios
+    //   .get("http://localhost:8888/membership/memberships")
+    //   .then((res) => setMemberships(res.data.data))
+    //   .catch((err) => console.log(err));
+
+    adminService.getMembership(dispatch);
+    setLoading(false);
+  }, [dispatch]);
+
   const isSelected = (name) => selected.indexOf(name) !== -1;
+
+  const openDeleteMebershipDialog = (id, membership) => {
+    //sending the memebership id and values to the new tab
+
+    setMembershipId(id);
+    setCurrentMembership(membership);
+    setDeleteDailog(!modalState);
+  };
+
+  const openEditMembershipForm = (id, membership) => {
+    setMembershipId(id);
+    setCurrentMembership(membership);
+    setEditDailog(!modalState);
+  };
 
   // Avoid a layout jump when reaching the last page with empty rows.
   // const emptyRows =
   //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <Box sx={{ width: "80%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+    <Box sx={{ width: "100%" }}>
+      <Header />
+
+      <Paper sx={{ width: "100%", mb: 2, mt: 2, backgroundColor: "#C4FAC3" }}>
+        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -246,58 +271,101 @@ export default function EnhancedTable() {
           >
             <EnhancedTableHead
               // numSelected={selected.length}
+              sx={{ backgroundColor: "#EDF3E8" }}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={membershipDetails.length}
             />
-            <TableBody>
+            <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.sort(getComparator(order, orderBy)).slice() */}
-              {stableSort(memberships, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                 rows.sort(ge tComparator(order, orderBy)).slice() */}
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.name)}
-                      // role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      // selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        {/* <Checkbox
+              {membershipDetails &&
+                stableSort(membershipDetails, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ?.map((row, index) => {
+                    const isItemSelected = isSelected(row.name);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        // role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        // key={row.id}
+                        // selected={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          {/* <Checkbox
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
                             'aria-labelledby': labelId,
                           }}
                         /> */}
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.userId.name}
-                      </TableCell>
-                      <TableCell align="right">{row.package.name}</TableCell>
-                      <TableCell align="right">
-                        {row.payment.paid_via}
-                      </TableCell>
-                      <TableCell align="right">{row.start_date}</TableCell>
-                      <TableCell align="right">{row.end_date}</TableCell>
-                      <TableCell align="right">{row.package.price}</TableCell>
-                    </TableRow>
-                  );
-                })}
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                          {row.userId?.name}
+                        </TableCell>
+                        <TableCell align="right">{row.package?.name}</TableCell>
+                        <TableCell align="right">
+                          {row.payment?.paid_via}
+                        </TableCell>
+                        <TableCell align="right">
+                          {moment.unix(row?.start_date).format("MM-DD-YYYY")}
+                        </TableCell>
+                        <TableCell align="right">
+                          {moment.unix(row?.end_date).format("MM-DD-YYYY")}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row?.package?.price}
+                        </TableCell>
+
+                        <TableCell>
+                          <Stack
+                            direction="row"
+                            alignItems="right"
+                            spacing={3}
+                            display="flex"
+                          >
+                            <EditIcon
+                              sx={{
+                                "& :hover": { color: "red" },
+                                cursor: "pointer",
+                                color: "blue",
+                              }}
+                              onClick={
+                                () =>
+                                  openEditMembershipForm(row.id, row) &&
+                                  console.log(row)
+                                // alert("hello")
+                                // console.log(row._id, row)
+                              }
+                            />
+                            <DeleteOutlineOutlinedIcon
+                              sx={{
+                                "& :hover": { color: "red" },
+                                cursor: "pointer",
+                                color: "red",
+                              }}
+                              onClick={() =>
+                                openDeleteMebershipDialog(row.id, row)
+                              }
+                            />
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -305,13 +373,27 @@ export default function EnhancedTable() {
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           colSpan={4}
-          count={memberships.length}
+          count={membershipDetails ? membershipDetails.length : null}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{ backgroundColor: "#D8E6CC" }}
         />
+        {deleteDailog && (
+          <DeleteMembershipForm
+            id={membershipId}
+            membership={currentmembership}
+            setModal={setDeleteDailog}
+          />
+        )}
+        {editDailog && (
+          <EditMembershipForm
+            id={membershipId}
+            membership={currentmembership}
+            setModal={setEditDailog}
+          />
+        )}
       </Paper>
     </Box>
   );
