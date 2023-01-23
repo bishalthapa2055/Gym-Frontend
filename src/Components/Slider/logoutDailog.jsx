@@ -49,6 +49,7 @@ const LogoutDailog = ({ setModal }) => {
         });
 
         navigate("/login");
+        window.location.reload();
       })
       .catch(function (error) {
         enqueueSnackbar("Failed to LogOut", {

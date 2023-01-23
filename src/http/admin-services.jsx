@@ -126,13 +126,39 @@ export const adminService = {
   },
 
   // this is  for users control sections
-  getUserss: async (dispatch) => {
+  getUserss: async (dispatch, query) => {
+    // try {
+    //   const url = `http://localhost:8888/users/displays`;
+    //   const response = await axios.get(url);
+    //   if (response) {
+    //     dispatch(getUsers(response.data));
+    //     return Promise.resolve(response);
+    //   }
+    // } catch (error) {
+    //   return Promise.reject(error);
+    // }
+    const { searchTerm, rowsPerPage, page, select, sortBy } = query;
     try {
-      const url = `http://localhost:8888/users/displays`;
-      const response = await axios.get(url);
-      if (response) {
-        dispatch(getUsers(response.data));
-        return Promise.resolve(response);
+      if (searchTerm) {
+        const response = await axios.get(
+          `http://localhost:8888/users/search?searchTerm=${searchTerm}`
+        );
+
+        if (response) {
+          dispatch(getUsers(response.data));
+          console.log(response.data);
+          return Promise.resolve(response);
+        }
+      } else {
+        const response = await axios.get(
+          `http://localhost:8888/users/search?limit=${rowsPerPage}&page=${page}`
+        );
+
+        if (response) {
+          dispatch(getUsers(response.data));
+          console.log("res", response.data);
+          return Promise.resolve(response);
+        }
       }
     } catch (error) {
       return Promise.reject(error);

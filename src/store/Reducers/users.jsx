@@ -12,10 +12,19 @@ export const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    getUsers: (state, action) => ({
-      ...state,
-      users: action.payload.data,
-    }),
+    getUsers: (state, action) => {
+      // console.log("action", action.payload);
+      return {
+        ...state,
+        users: action.payload.data,
+        total: action.payload.total,
+      };
+    },
+    //   ({
+    //   ...state,
+    //   users: action.payload.data,
+    //   total: action.payload.total,
+    // }),
     deleteUser: (state, action) => {
       console.log(action.payload);
       return {

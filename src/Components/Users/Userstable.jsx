@@ -28,14 +28,15 @@ import Search from "@mui/icons-material/Search";
 import EditUserForm from "./EditUserForm";
 import { adminService } from "../../http/admin-services";
 import Display from "../Display";
-import debounce from "lodash/debounce";
+
 import Progress from "../Progress";
 import { api } from "../../http/api";
 import { useDispatch, useSelector } from "react-redux";
+import { useQuery } from "react-query";
 
 function Userstable() {
   const [users, setUsers] = useState([]);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [modalState, setModalState] = useState(false);
   const [userId, setUserId] = useState("");
@@ -43,19 +44,48 @@ function Userstable() {
   const [currentUser, setCurrentUser] = useState();
   const [searchTerm, setsearchTerm] = useState("");
   const [openViewDialog, setopenViewDialog] = useState(false);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = React.useState(true);
-
+  // const [data, setData] = useState([]);
+  // const [isLoading, setisLoading] = React.useState(true);
+  const [sortBy, setSortBy] = useState("-createdAt");
+  const [select, setSelect] = useState("all");
   const [searchUser, setSearchUser] = React.useState([]);
 
   const dispatch = useDispatch();
 
   const userDetails = useSelector((state) => state.user.users);
+  const total = useSelector((state) => state.user.total);
+  // console.log("🚀 ~ file: Userstable.jsx:57 ~ Userstable ~ total", total);
 
+  const { data, isLoading } = useQuery(
+    ["Users", dispatch, searchTerm, rowsPerPage, page, select, sortBy],
+    () => {
+      adminService.getUserss(dispatch, {
+        searchTerm,
+        rowsPerPage,
+        page,
+        select,
+        sortBy,
+      });
+    }
+  );
+  console.log("data ", data);
+  console.log("isLoading", isLoading);
+  console.log(userDetails.length);
+
+  // useEffect(() => {
+
+  //   adminService.getUserss(dispatch, {
+  //     searchTerm,
+  //     rowsPerPage,
+  //     page,
+  //     select,
+  //     sortBy,
+  //   });
+  //   setLoading(false);
+  // }, [dispatch]);
+
+  /*
   useEffect(() => {
-    // const fetchdata = async () => {
-    // const res = await adminService.getUser();
-    // console.log(res);
     // setLoading(true);
     const fetchdata = async () => {
       // const res = await axios.get("http://localhost:8888/users/displays");
@@ -64,40 +94,14 @@ function Userstable() {
         // setUsers(res.data.data);
         setLoading(false);
       }
-
-      // .then((res) => setUsers(res.data.data))
-      // .catch((err) => console.log(err))
-      // .finally(() => setLoading(false));
     };
 
     fetchdata();
     // },
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   // const fetchdata = async () => {
-  //   // const res = await adminService.getUser();
-  //   // console.log(res);
-  //   // setLoading(true);
-  //   axios
-  //     .get("http://localhost:8888/users/displays")
-  //     .then((res) => setData(res.data.data))
-  //     .catch((err) => console.log(err));
-  //   // setLoading(false);
-  //   // fetchdata();
-  //   // },
-  // }, []);
-  // console.log(users);
-  // useEffect(() => {
-  //   const fetchdata  = async () => {
-  //   // const res = await adminService.getUser();
-  //   setLoading(true);
-  //  const response = await axios.get("http://localhost:8888/users/displays");
-  //  setUsers(response.data.data)
-  //  setLoading(false)
-  // },
-  // fetchdata();
-  // }, []);
+  */
+
   const openEditForm = (id, user) => {
     //open edit form
     setUserId(id);
@@ -107,11 +111,11 @@ function Userstable() {
   // console.log(userId);
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(+event.target.value, 10));
     setPage(0);
   };
 
@@ -126,7 +130,7 @@ function Userstable() {
     setCurrentUser(user);
     setopenViewDialog(!modalState);
   };
-  console.log(userId);
+  // console.log(userId);
   return (
     <Box>
       <Header />
@@ -161,72 +165,75 @@ function Userstable() {
       </Box>
       <Divider />
 
-      {loading ? (
+      {/* {isLoading ? (
         <Progress />
-      ) : (
-        <>
-          <TableContainer
-            sx={{ width: "100%" }}
-            component={Paper}
-            // rowCount={users.length}
+      ) : ( */}
+      <>
+        <TableContainer
+          sx={{ width: "100%" }}
+          component={Paper}
+          // rowCount={users.length}
+        >
+          <Table
+            sx={{ minWidth: 650, color: "black", backgroundColor: "#C0C0C0" }}
+            aria-label="simple table"
           >
-            <Table
-              sx={{ minWidth: 650, color: "black", backgroundColor: "#C0C0C0" }}
-              aria-label="simple table"
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell>NAME</TableCell>
-                  <TableCell align="right">E-MAIL</TableCell>
-                  <TableCell align="right">PHONE NUMBER</TableCell>
-                  <TableCell align="right">CREATED AT</TableCell>
-                  <TableCell align="center">OPERATIONS</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* {loading ? (
+            <TableHead>
+              <TableRow>
+                <TableCell>NAME</TableCell>
+                <TableCell align="right">E-MAIL</TableCell>
+                <TableCell align="right">PHONE NUMBER</TableCell>
+                <TableCell align="right">CREATED AT</TableCell>
+                <TableCell align="center">OPERATIONS</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {/* {loading ? (
               <Progress />
             ) : (
               <> */}
-                {userDetails &&
-                  userDetails.length &&
-                  userDetails?.slice(
+              {userDetails &&
+                userDetails?.length &&
+                userDetails?.slice(
+                  page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage
+                ) &&
+                userDetails
+                  .filter(
+                    (user) =>
+                      user.name.toLowerCase().includes(searchUser) ||
+                      user.email.toLowerCase().includes(searchUser) ||
+                      user.phone.includes(searchUser)
+                  )
+                  .slice(
                     page * rowsPerPage,
                     page * rowsPerPage + rowsPerPage
                   ) &&
-                  userDetails
-                    .filter(
-                      (user) =>
-                        user.name.toLowerCase().includes(searchUser) ||
-                        user.email.toLowerCase().includes(searchUser) ||
-                        user.phone.includes(searchUser)
-                    )
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((data) => (
-                      <TableRow
-                        key={data.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {data.name}
-                        </TableCell>
-                        <TableCell align="right">{data.email}</TableCell>
-                        <TableCell align="right">{data.phone}</TableCell>
-                        <TableCell align="right">
-                          {/* {data.created} */}
+                userDetails?.map((data) => (
+                  <TableRow
+                    key={data.id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {data.name}
+                    </TableCell>
+                    <TableCell align="right">{data.email}</TableCell>
+                    <TableCell align="right">{data.phone}</TableCell>
+                    <TableCell align="right">
+                      {/* {data.created} */}
 
-                          {moment(data.created).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={3}
-                            display="flex"
-                          >
-                            {/* <Button
+                      {moment(data.created).format("MM-DD-YYYY")}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={3}
+                        display="flex"
+                      >
+                        {/* <Button
                         variant="contained"
                         startIcon={<EditIcon />}
                         onClick={() => openEditForm(data._id, data)}
@@ -234,64 +241,64 @@ function Userstable() {
                       >
                         Edit
                       </Button> */}
-                            <EditIcon
-                              sx={{
-                                "& :hover": { color: "red" },
-                                cursor: "pointer",
-                                color: "blue",
-                              }}
-                              onClick={() => openEditForm(data.id, data)}
-                            />
-                            {/* <Button
+                        <EditIcon
+                          sx={{
+                            "& :hover": { color: "red" },
+                            cursor: "pointer",
+                            color: "blue",
+                          }}
+                          onClick={() => openEditForm(data.id, data)}
+                        />
+                        {/* <Button
                         variant="contained"
                         startIcon={<DeleteIcon />}
                         onClick={() => openDeleteDialog(data._id, data)}
                       > */}
-                            {/* Delete */}
-                            <DeleteOutlineOutlinedIcon
-                              sx={{
-                                "& :hover": { color: "red" },
-                                cursor: "pointer",
-                                color: "red",
-                              }}
-                              onClick={() => openDeleteDialog(data.id, data)}
-                            />
-                            {/* </Button> */}
-                            {/* <Button
+                        {/* Delete */}
+                        <DeleteOutlineOutlinedIcon
+                          sx={{
+                            "& :hover": { color: "red" },
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                          onClick={() => openDeleteDialog(data.id, data)}
+                        />
+                        {/* </Button> */}
+                        {/* <Button
                         variant="contained"
                         startIcon={<PreviewOutlinedIcon />}
                         onClick={() => openDeleteDialog(data._id, data)}
                       >
                         View
                       </Button> */}
-                            <RemoveRedEyeOutlinedIcon
-                              sx={{
-                                "& :hover": { color: "red" },
-                                cursor: "pointer",
-                                color: "green",
-                              }}
-                              onClick={() => openDialog(data.id, data)}
-                            />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                {/* </>
+                        <RemoveRedEyeOutlinedIcon
+                          sx={{
+                            "& :hover": { color: "red" },
+                            cursor: "pointer",
+                            color: "green",
+                          }}
+                          onClick={() => openDialog(data.id, data)}
+                        />
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              {/* </>
             )} */}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 15]}
-              component="div"
-              count={userDetails.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
-        </>
-      )}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 15, 20, 25]}
+            component="div"
+            count={total}
+            rowsPerPage={rowsPerPage}
+            page={page - 1}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      </>
+      {/* )} */}
 
       {modalState && (
         <EditUserForm
