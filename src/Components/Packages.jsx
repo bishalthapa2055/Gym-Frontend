@@ -26,6 +26,7 @@ import DeletePackagesForm from "./Packages/DeletePackagesForm";
 import CustomizedMenus from "./Packages/options";
 import UpdateStatus from "./Packages/UpdateStatus";
 import { adminService } from "../http/admin-services";
+import { useQuery } from "react-query";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -164,7 +165,7 @@ export default function EnhancedTable() {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [packages, setPackages] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -173,12 +174,21 @@ export default function EnhancedTable() {
   const [currentPackages, setCurrentPackages] = React.useState("");
   const [deleteDailog, setDeleteDailog] = React.useState(false);
   const [optionId, setOptionId] = React.useState("");
+  const [searchTerm, serSearchTerm] = React.useState();
+  const [sortBy, setSortBy] = React.useState("-createdAt");
+  const [select, setSelect] = React.useState("all");
 
   const [packagesStatus, setPackagesStatus] = React.useState();
   const [updateStatusModel, setUpdateStatusModel] = React.useState(false);
 
   const dispatch = useDispatch();
+  const total = useSelector((state) => state.packages.total);
+  console.log("🚀 ~ file: Packages.jsx:186 ~ EnhancedTable ~ total", total);
   const packagesDetails = useSelector((state) => state.packages.packages);
+  console.log(
+    "🚀 ~ file: Packages.jsx:188 ~ EnhancedTable ~ packagesDetails",
+    packagesDetails
+  );
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -216,11 +226,11 @@ export default function EnhancedTable() {
   };
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(+event.target.value, 10));
     setPage(0);
   };
 
@@ -272,17 +282,33 @@ export default function EnhancedTable() {
   //   console.log("packages", data);
   // };
   // fetchdata();
-  React.useEffect(() => {
-    // setTimeout(() => {
-    // axios
-    //   .get("http://localhost:8888/package/packages")
-    //   .then((res) => setPackages(res.data.data) && console.log("res", res))
-    //   .catch((err) => console.log(err))
-    //   .finally(() => setLoading(false));
-    adminService.getPackages(dispatch);
-    setLoading(false);
-    // }, 1000);
-  }, [dispatch]);
+
+  // using query for fetching the data according to the pagination
+
+  const { data, isLoading } = useQuery(
+    ["Packages", searchTerm, rowsPerPage, page, select, sortBy],
+    () => {
+      adminService.getPackages(dispatch, {
+        searchTerm,
+        rowsPerPage,
+        page,
+        select,
+        sortBy,
+      });
+    }
+  );
+
+  // React.useEffect(() => {
+  //   // setTimeout(() => {
+  //   // axios
+  //   //   .get("http://localhost:8888/package/packages")
+  //   //   .then((res) => setPackages(res.data.data) && console.log("res", res))
+  //   //   .catch((err) => console.log(err))
+  //   //   .finally(() => setLoading(false));
+  //   adminService.getPackages(dispatch);
+  //   setLoading(false);
+  //   // }, 1000);
+  // }, [dispatch]);
   // React.useEffect(() => {
   // const fetchdata = async () => {
   // const res = await adminService.getUser();
@@ -304,18 +330,16 @@ export default function EnhancedTable() {
   // },
   // }, []);
 
-  console.log(packages);
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   return (
     <>
-      {loading ? (
+      {/* {isLoading ? (
         <Progress />
       ) : (
-        <>
-          <Box sx={{ width: "95%" }}>
-            {/* <Typography
+        <> */}
+      <Box sx={{ width: "95%" }}>
+        {/* <Typography
               variant="h6"
               component="h6"
               m={2}
@@ -324,169 +348,169 @@ export default function EnhancedTable() {
             >
               Lists of Availabe Packages
             </Typography> */}
-            {/* <packagesHeader /> */}
-            {/* <packagesHeader /> */}
-            <Header />
-            <Paper
-              sx={{
-                width: "100%",
-                mb: 2,
-                backgroundColor: "#C4FAC3",
-              }}
+        {/* <packagesHeader /> */}
+        {/* <packagesHeader /> */}
+        <Header />
+        <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            backgroundColor: "#C4FAC3",
+          }}
+        >
+          {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
+
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby="tableTitle"
+              // size={dense ? 'small' : 'medium'}
             >
-              {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 750 }}
-                  aria-labelledby="tableTitle"
-                  // size={dense ? 'small' : 'medium'}
-                >
-                  <EnhancedTableHead
-                    // numSelected={selected.length}
-                    sx={{ backgroundColor: "#EDF3E8" }}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={packagesDetails.length}
-                  />
-                  <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
-                    {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+              <EnhancedTableHead
+                // numSelected={selected.length}
+                sx={{ backgroundColor: "#EDF3E8" }}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={packagesDetails.length}
+              />
+              <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
+                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(getComparator(order, orderBy)).slice() */}
-                    {packagesDetails &&
-                      packagesDetails.length &&
-                      stableSort(packagesDetails, getComparator(order, orderBy))
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        ?.map((row, index) => {
-                          const isItemSelected = isSelected(row.id);
-                          const labelId = `enhanced-table-checkbox-${index}`;
+                {packagesDetails &&
+                  packagesDetails?.length &&
+                  // stableSort(packagesDetails, getComparator(order, orderBy))
+                  // packagesDetails
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  packagesDetails?.map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                          return (
-                            <TableRow
-                              hover
-                              onClick={(event) => handleClick(event, row.name)}
-                              // role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row.id}
-                              // selected={isItemSelected}
+                    return (
+                      <>
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row.name)}
+                          // role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row.id}
+                          // selected={isItemSelected}
+                        >
+                          <TableCell padding="checkbox"></TableCell>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                            {row.name}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row.discount_percentage}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row.duration_in_days}
+                          </TableCell>
+                          <TableCell align="right">{row.price}</TableCell>
+                          <TableCell align="center">
+                            {/* {row.status} */}
+                            {/* <CustomizedMenus /> */}
+                            <select
+                              value={row.status}
+                              onChange={(e) => {
+                                setOptionId(row.id);
+                                console.log(row.id);
+                                setPackagesStatus(e.target.value);
+                                setUpdateStatusModel(true);
+                              }}
                             >
-                              <TableCell padding="checkbox"></TableCell>
-                              <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                                padding="none"
-                              >
-                                {row.name}
-                              </TableCell>
-                              <TableCell align="right">
-                                {row.discount_percentage}
-                              </TableCell>
-                              <TableCell align="right">
-                                {row.duration_in_days}
-                              </TableCell>
-                              <TableCell align="right">{row.price}</TableCell>
-                              <TableCell align="center">
-                                {/* {row.status} */}
-                                {/* <CustomizedMenus /> */}
-                                <select
-                                  value={row.status}
-                                  onChange={(e) => {
-                                    setOptionId(row.id);
-                                    console.log(row.id);
-                                    setPackagesStatus(e.target.value);
-                                    setUpdateStatusModel(true);
-                                  }}
-                                >
-                                  <option value="draft">Draft</option>
-                                  <option value="published">Published</option>
-                                </select>
-                              </TableCell>
-                              <TableCell align="center">
-                                <Stack
-                                  direction="row"
-                                  alignItems="right"
-                                  spacing={3}
-                                  display="flex"
-                                >
-                                  <EditIcon
-                                    sx={{
-                                      "& :hover": { color: "red" },
-                                      cursor: "pointer",
-                                      color: "blue",
-                                    }}
-                                    onClick={
-                                      () => openEditPackagesForm(row.id, row)
-                                      // alert("hello")
-                                      // console.log(row._id, row)
-                                    }
-                                  />
-                                  <DeleteOutlineOutlinedIcon
-                                    sx={{
-                                      "& :hover": { color: "red" },
-                                      cursor: "pointer",
-                                      color: "red",
-                                    }}
-                                    onClick={
-                                      () =>
-                                        openDeletePackagesDialog(row.id, row)
-                                      // alert("hello")
-                                    }
-                                  />
-                                </Stack>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={packagesDetails ? packagesDetails.length : null}
-                // count={packagesDetails.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ backgroundColor: "#D8E6CC" }}
-              />
-              {modalState && (
-                <EditPackagesForm
-                  edit={true}
-                  id={packagesId}
-                  setModal={setModalState}
-                  packages={currentPackages}
-                />
-              )}
+                              <option value="draft">Draft</option>
+                              <option value="published">Published</option>
+                            </select>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Stack
+                              direction="row"
+                              alignItems="right"
+                              spacing={3}
+                              display="flex"
+                            >
+                              <EditIcon
+                                sx={{
+                                  "& :hover": { color: "red" },
+                                  cursor: "pointer",
+                                  color: "blue",
+                                }}
+                                onClick={
+                                  () => openEditPackagesForm(row.id, row)
+                                  // alert("hello")
+                                  // console.log(row._id, row)
+                                }
+                              />
+                              <DeleteOutlineOutlinedIcon
+                                sx={{
+                                  "& :hover": { color: "red" },
+                                  cursor: "pointer",
+                                  color: "red",
+                                }}
+                                onClick={
+                                  () => openDeletePackagesDialog(row.id, row)
+                                  // alert("hello")
+                                }
+                              />
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={total}
+            // count={packagesDetails ? packagesDetails.length : null}
+            // count={packagesDetails.length}
+            rowsPerPage={rowsPerPage}
+            page={page - 1}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{ backgroundColor: "#D8E6CC" }}
+          />
+          {modalState && (
+            <EditPackagesForm
+              edit={true}
+              id={packagesId}
+              setModal={setModalState}
+              packages={currentPackages}
+            />
+          )}
 
-              {deleteDailog && (
-                <DeletePackagesForm
-                  id={packagesId}
-                  setModal={setDeleteDailog}
-                  packages={currentPackages}
-                />
-              )}
-            </Paper>
+          {deleteDailog && (
+            <DeletePackagesForm
+              id={packagesId}
+              setModal={setDeleteDailog}
+              packages={currentPackages}
+            />
+          )}
+        </Paper>
 
-            {updateStatusModel && (
-              <UpdateStatus
-                closeFunction={closeModel}
-                // updateFunction={optionId}
-                setModel={updateStatusModel}
-                id={optionId}
-                status={packagesStatus}
-              />
-            )}
-          </Box>
-        </>
-      )}
+        {updateStatusModel && (
+          <UpdateStatus
+            closeFunction={closeModel}
+            // updateFunction={optionId}
+            setModel={updateStatusModel}
+            id={optionId}
+            status={packagesStatus}
+          />
+        )}
+      </Box>
+      {/* </>
+      )} */}
     </>
   );
 }

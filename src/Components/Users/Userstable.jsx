@@ -68,9 +68,9 @@ function Userstable() {
       });
     }
   );
-  console.log("data ", data);
-  console.log("isLoading", isLoading);
-  console.log(userDetails.length);
+  // console.log("data ", data);
+  // console.log("isLoading", isLoading);
+  // console.log(userDetails.length);
 
   // useEffect(() => {
 
@@ -199,7 +199,7 @@ function Userstable() {
                   page * rowsPerPage + rowsPerPage
                 ) &&
                 userDetails
-                  .filter(
+                  ?.filter(
                     (user) =>
                       user.name.toLowerCase().includes(searchUser) ||
                       user.email.toLowerCase().includes(searchUser) ||
@@ -231,6 +231,7 @@ function Userstable() {
                         direction="row"
                         alignItems="center"
                         spacing={3}
+                        justifyContent="center"
                         display="flex"
                       >
                         {/* <Button

@@ -45,17 +45,40 @@ export const adminService = {
   // const dispatch = useDispatch();
 
   // thhis is for packages details
-  getPackages: async (dispatch) => {
+  getPackages: async (dispatch, query) => {
     // const { searchTerm, rowsPerPage, page, select, sortBy } = query;
-    try {
-      const response = await axios.get(
-        "http://localhost:8888/package/packages"
-      );
+    // try {
+    //   const response = await axios.get(
+    //     "http://localhost:8888/package/packages"
+    //   );
 
-      if (response) {
-        dispatch(getPackages(response.data));
-        // getPackages(response);
-        return Promise.resolve(response);
+    //   if (response) {
+    //     dispatch(getPackages(response.data));
+    //     // getPackages(response);
+    //     return Promise.resolve(response);
+    //   }
+    // } catch (error) {
+    //   return Promise.reject(error);
+    // }
+    const { searchTerm, rowsPerPage, page, select, sortBy } = query;
+
+    try {
+      if (searchTerm) {
+        const response = await axios.get(
+          `http://localhost:8888/package/searchPackage?searchTerm=${searchTerm}`
+        );
+        if (response) {
+          dispatch(getPackages(response.data));
+          return Promise.resolve(response);
+        }
+      } else {
+        const response = await axios.get(
+          `http://localhost:8888/package/searchPackage?page=${page}&limit=${rowsPerPage}`
+        );
+        if (response) {
+          dispatch(getPackages(response.data));
+          return Promise.resolve(response);
+        }
       }
     } catch (error) {
       return Promise.reject(error);

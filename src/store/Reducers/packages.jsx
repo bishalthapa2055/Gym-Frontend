@@ -16,6 +16,7 @@ export const packagesSlice = createSlice({
       // console.log("action get", action.payload.data);
       return {
         ...state,
+        total : action.payload.total,
         packages: action.payload.data,
       };
     },
