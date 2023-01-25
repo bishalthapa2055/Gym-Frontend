@@ -42,7 +42,8 @@ function Userstable() {
   const [userId, setUserId] = useState("");
   const [deleteDailog, setDeleteDailog] = useState(false);
   const [currentUser, setCurrentUser] = useState();
-  const [searchTerm, setsearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [openViewDialog, setopenViewDialog] = useState(false);
   // const [data, setData] = useState([]);
   // const [isLoading, setisLoading] = React.useState(true);
@@ -55,7 +56,10 @@ function Userstable() {
   const userDetails = useSelector((state) => state.user.users);
   const total = useSelector((state) => state.user.total);
   // console.log("🚀 ~ file: Userstable.jsx:57 ~ Userstable ~ total", total);
-
+  console.log(
+    "🚀 ~ file: Userstable.jsx:46 ~ Userstable ~ searchTerm",
+    searchTerm
+  );
   const { data, isLoading } = useQuery(
     ["Users", dispatch, searchTerm, rowsPerPage, page, select, sortBy],
     () => {
@@ -68,8 +72,8 @@ function Userstable() {
       });
     }
   );
-  // console.log("data ", data);
-  // console.log("isLoading", isLoading);
+
+  // console.log("data", data);
   // console.log(userDetails.length);
 
   // useEffect(() => {
@@ -109,6 +113,17 @@ function Userstable() {
     setModalState(!modalState);
   };
   // console.log(userId);
+
+  const changeSearchTerm = (e) => {
+    // console.log("search", e.target.value);
+    const search = e.target.value;
+    console.log(
+      "🚀 ~ file: Userstable.jsx:120 ~ changeSearchTerm ~ search",
+      search
+    );
+
+    setSearchTerm(search);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage + 1);
@@ -153,7 +168,7 @@ function Userstable() {
                   </InputAdornment>
                 ),
               }}
-              onChange={(e) => setSearchUser(e.target.value)}
+              onChange={changeSearchTerm}
               placeholder="Search  Users"
               // value={dependentSearch.current}
               size="small"

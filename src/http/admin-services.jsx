@@ -163,19 +163,22 @@ export const adminService = {
     const { searchTerm, rowsPerPage, page, select, sortBy } = query;
     try {
       if (searchTerm) {
+        console.log("search", searchTerm);
         const response = await axios.get(
           `http://localhost:8888/users/search?searchTerm=${searchTerm}`
         );
+        console.log(response, "response with search term ");
 
         if (response) {
           dispatch(getUsers(response.data));
-          console.log(response.data);
+          // console.log("res data ", response.data);
           return Promise.resolve(response);
         }
       } else {
         const response = await axios.get(
           `http://localhost:8888/users/search?limit=${rowsPerPage}&page=${page}`
         );
+        console.log("no search res", response);
 
         if (response) {
           dispatch(getUsers(response.data));
