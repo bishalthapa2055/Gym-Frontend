@@ -17,7 +17,7 @@ export const usersSlice = createSlice({
       return {
         ...state,
         users: action.payload.data,
-        // total: action.payload.result,
+        // result: action.payload.result,
         total: action.payload.total,
       };
     },

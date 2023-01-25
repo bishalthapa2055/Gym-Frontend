@@ -54,6 +54,7 @@ function Userstable() {
   const dispatch = useDispatch();
 
   const userDetails = useSelector((state) => state.user.users);
+  const result = useSelector((state) => state.user.result);
   const total = useSelector((state) => state.user.total);
   // console.log("🚀 ~ file: Userstable.jsx:57 ~ Userstable ~ total", total);
   console.log(
@@ -306,7 +307,7 @@ function Userstable() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 15, 20, 25]}
             component="div"
-            count={total}
+            count={result ? result : total}
             rowsPerPage={rowsPerPage}
             page={page - 1}
             onPageChange={handleChangePage}

@@ -27,8 +27,8 @@ root.render(
           <Provider store={store}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <App />
-                {/* <App1 /> */}
+                {/* <App /> */}
+                <App1 />
                 {/* <Redux /> */}
               </LocalizationProvider>
             </MuiPickersUtilsProvider>
