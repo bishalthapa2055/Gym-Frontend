@@ -123,7 +123,8 @@ function Userstable() {
       search
     );
 
-    setSearchTerm(search);
+    // console.log("tyoe of ", typeof search);
+    setSearchTerm(String(search));
   };
 
   const handleChangePage = (event, newPage) => {

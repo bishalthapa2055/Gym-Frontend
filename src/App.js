@@ -15,33 +15,16 @@ function App() {
   // const [user] = useAuthState(auth);
   useEffect(() => {
     const fetchData = async () => {
-      // try {
-      const data = await api.get("/isAdmin");
+      try {
+        const data = await api.get("/isAdmin");
 
-      const status = data?.status;
-      if (status) {
-        setStatus(true);
+        const status = data?.status;
+        if (status) {
+          setStatus(true);
+        }
+      } catch (e) {
+        localStorage.removeItem("accessToken");
       }
-      //  else {
-      //   enqueueSnackbar("Connection Timed Out !! LogIn Again", {
-      //     variant: "error",
-      //     anchorOrigin: {
-      //       vertical: "top",
-      //       horizontal: "right",
-      //     },
-      //   });
-      //   localStorage.removeItem("accessToken");
-      // }
-      // } catch (e) {
-      //   enqueueSnackbar("Connection Timed Out !! LogIn Again", {
-      //     variant: "error",
-      //     anchorOrigin: {
-      //       vertical: "top",
-      //       horizontal: "right",
-      //     },
-      //   });
-      // localStorage.removeItem("accessToken");
-      // }
     };
     fetchData();
   }, []);
