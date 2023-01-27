@@ -11,6 +11,7 @@ import { api } from "./http/api.jsx";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { userServices } from "./http/user-services.jsx";
 import { useSnackbar } from "notistack";
+import { Button } from "@mui/material";
 
 const Container = styled.div`
   width: 100vw;
@@ -103,6 +104,7 @@ const Login = () => {
             // return Promise.resolve(res);
             localStorage.setItem("accessToken", accessToken);
             setDisplay(true);
+
             enqueueSnackbar("LogIn Sucessfully", {
               variant: "success",
               anchorOrigin: {
@@ -149,6 +151,7 @@ const Login = () => {
                       <div style={{ display: !show ? "block" : "none" }}>
                         <h1>Please Enter Your Phone Number</h1>
                         <input
+                          height="100px"
                           value={mynumber}
                           onChange={(e) => {
                             setnumber(e.target.value);
@@ -159,7 +162,7 @@ const Login = () => {
                         <br />
                         <br />
                         <div id="recaptcha-container"></div>
-                        <button
+                        {/* <button
                           onClick={signin}
                           style={{
                             borderRadius: "5px",
@@ -169,7 +172,17 @@ const Login = () => {
                           }}
                         >
                           Send OTP
-                        </button>
+                        </button> */}
+                        <Button
+                          sx={{ mt: { xs: 2, sm: 0 } }}
+                          // onClick={openUserForm}
+                          onClick={signin}
+                          variant="contained"
+                          cursor="pointer"
+                          // endIcon={<AddIcon fontSize="small" />}
+                        >
+                          SEND OTP
+                        </Button>
                       </div>
                       <div style={{ display: show ? "block" : "none" }}>
                         <h1>Please Enter Your OTP</h1>

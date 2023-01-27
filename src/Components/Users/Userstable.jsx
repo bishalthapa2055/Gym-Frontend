@@ -47,7 +47,7 @@ function Userstable() {
 
   const [openViewDialog, setopenViewDialog] = useState(false);
   // const [data, setData] = useState([]);
-  // const [isLoading, setisLoading] = React.useState(true);
+  // const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("-createdAt");
   const [select, setSelect] = useState("all");
   const [searchUser, setSearchUser] = React.useState([]);
@@ -58,10 +58,10 @@ function Userstable() {
   const result = useSelector((state) => state.user.result);
   const total = useSelector((state) => state.user.total);
   // console.log("🚀 ~ file: Userstable.jsx:57 ~ Userstable ~ total", total);
-  console.log(
-    "🚀 ~ file: Userstable.jsx:46 ~ Userstable ~ searchTerm",
-    searchTerm
-  );
+  // console.log(
+  //   "🚀 ~ file: Userstable.jsx:46 ~ Userstable ~ searchTerm",
+  //   searchTerm
+  // );
   const { data, isLoading } = useQuery(
     ["Users", dispatch, searchTerm, rowsPerPage, page, select, sortBy],
     () => {
@@ -74,6 +74,8 @@ function Userstable() {
       });
     }
   );
+
+  // setLoading(false);
 
   // console.log("data", data);
   // console.log(userDetails.length);
@@ -169,109 +171,118 @@ function Userstable() {
   };
   // console.log(userId);
   return (
-    <Box>
-      <Header />
-      <Box p={2}>
-        <Grid
-          container
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Grid item xs={12}>
-            <TextField
-              margin="none"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              onChange={(e) => handleSearchTerm(e.target.value)}
-              placeholder="Search  Users"
-              // value={dependentSearch.current}
-              size="small"
-              fullWidth
-              variant="outlined"
-            />
+    // <>
+    //   {loading ? (
+    //     <Progress />
+    //   ) : (
+    <>
+      <Box>
+        <Header />
+        <Box p={2}>
+          <Grid
+            container
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Grid item xs={12}>
+              <TextField
+                margin="none"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={(e) => handleSearchTerm(e.target.value)}
+                placeholder="Search  Users"
+                // value={dependentSearch.current}
+                size="small"
+                fullWidth
+                variant="outlined"
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-      <Divider />
+        </Box>
+        <Divider />
 
-      {/* {isLoading ? (
+        {/* {isLoading ? (
         <Progress />
       ) : ( */}
-      <>
-        <TableContainer
-          sx={{ width: "100%" }}
-          component={Paper}
-          // rowCount={users.length}
-        >
-          <Table
-            sx={{ minWidth: 650, color: "black", backgroundColor: "#C0C0C0" }}
-            aria-label="simple table"
+        <>
+          <TableContainer
+            sx={{ width: "100%" }}
+            component={Paper}
+            // rowCount={users.length}
           >
-            <TableHead>
-              <TableRow>
-                <TableCell>NAME</TableCell>
-                <TableCell align="right">E-MAIL</TableCell>
-                <TableCell align="right">PHONE NUMBER</TableCell>
-                <TableCell align="right">CREATED AT</TableCell>
-                <TableCell align="center">OPERATIONS</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/* {loading ? (
-              <Progress />
-            ) : (
-              <> */}
-              {userDetails &&
-                userDetails?.length &&
-                userDetails?.slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                ) &&
-                userDetails
-                  ?.filter(
-                    (user) =>
-                      user.name.toLowerCase().includes(searchUser) ||
-                      user.email.toLowerCase().includes(searchUser) ||
-                      user.phone.includes(searchUser)
-                  )
-                  .slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  ) &&
-                userDetails?.map((data) => (
-                  <TableRow
-                    key={data.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                    }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {data.name}
-                    </TableCell>
-                    <TableCell align="right">{data.email}</TableCell>
-                    <TableCell align="right">{data.phone}</TableCell>
-                    <TableCell align="right">
-                      {/* {data.created} */}
+            <Table
+              sx={{
+                minWidth: 650,
+                color: "black",
+                backgroundColor: "#C0C0C0",
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>NAME</TableCell>
+                  <TableCell align="right">E-MAIL</TableCell>
+                  <TableCell align="right">PHONE NUMBER</TableCell>
+                  <TableCell align="right">CREATED AT</TableCell>
+                  <TableCell align="center">OPERATIONS</TableCell>
+                </TableRow>
+              </TableHead>
+              {isLoading ? (
+                <Progress />
+              ) : (
+                <>
+                  <TableBody>
+                    {userDetails &&
+                      userDetails?.length &&
+                      userDetails?.slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      ) &&
+                      userDetails
+                        ?.filter(
+                          (user) =>
+                            user.name.toLowerCase().includes(searchUser) ||
+                            user.email.toLowerCase().includes(searchUser) ||
+                            user.phone.includes(searchUser)
+                        )
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        ) &&
+                      userDetails?.map((data) => (
+                        <TableRow
+                          key={data.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {data.name}
+                          </TableCell>
+                          <TableCell align="right">{data.email}</TableCell>
+                          <TableCell align="right">{data.phone}</TableCell>
+                          <TableCell align="right">
+                            {/* {data.created} */}
 
-                      {moment(data.created).format("MM-DD-YYYY")}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        spacing={3}
-                        justifyContent="center"
-                        display="flex"
-                      >
-                        {/* <Button
+                            {moment(data.created).format("MM-DD-YYYY")}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              spacing={3}
+                              justifyContent="center"
+                              display="flex"
+                            >
+                              {/* <Button
                         variant="contained"
                         startIcon={<EditIcon />}
                         onClick={() => openEditForm(data._id, data)}
@@ -279,84 +290,91 @@ function Userstable() {
                       >
                         Edit
                       </Button> */}
-                        <EditIcon
-                          sx={{
-                            "& :hover": { color: "red" },
-                            cursor: "pointer",
-                            color: "blue",
-                          }}
-                          onClick={() => openEditForm(data.id, data)}
-                        />
-                        {/* <Button
+                              <EditIcon
+                                sx={{
+                                  "& :hover": { color: "red" },
+                                  cursor: "pointer",
+                                  color: "blue",
+                                }}
+                                onClick={() => openEditForm(data.id, data)}
+                              />
+                              {/* <Button
                         variant="contained"
                         startIcon={<DeleteIcon />}
                         onClick={() => openDeleteDialog(data._id, data)}
                       > */}
-                        {/* Delete */}
-                        <DeleteOutlineOutlinedIcon
-                          sx={{
-                            "& :hover": { color: "red" },
-                            cursor: "pointer",
-                            color: "red",
-                          }}
-                          onClick={() => openDeleteDialog(data.id, data)}
-                        />
-                        {/* </Button> */}
-                        {/* <Button
+                              {/* Delete */}
+                              <DeleteOutlineOutlinedIcon
+                                sx={{
+                                  "& :hover": { color: "red" },
+                                  cursor: "pointer",
+                                  color: "red",
+                                }}
+                                onClick={() => openDeleteDialog(data.id, data)}
+                              />
+                              {/* </Button> */}
+                              {/* <Button
                         variant="contained"
                         startIcon={<PreviewOutlinedIcon />}
                         onClick={() => openDeleteDialog(data._id, data)}
                       >
                         View
                       </Button> */}
-                        <RemoveRedEyeOutlinedIcon
-                          sx={{
-                            "& :hover": { color: "red" },
-                            cursor: "pointer",
-                            color: "green",
-                          }}
-                          onClick={() => openDialog(data.id, data)}
-                        />
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {/* </>
-            )} */}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20, 25]}
-            component="div"
-            count={total}
-            rowsPerPage={rowsPerPage}
-            page={page - 1}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
-      </>
-      {/* )} */}
+                              <RemoveRedEyeOutlinedIcon
+                                sx={{
+                                  "& :hover": { color: "red" },
+                                  cursor: "pointer",
+                                  color: "green",
+                                }}
+                                onClick={() => openDialog(data.id, data)}
+                              />
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </>
+              )}
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 15, 20]}
+              component="div"
+              count={total}
+              rowsPerPage={rowsPerPage}
+              page={page - 1}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        </>
+        {/* )} */}
 
-      {modalState && (
-        <EditUserForm
-          edit={true}
-          id={userId}
-          setModal={setModalState}
-          user={currentUser}
-        />
-      )}
-      {deleteDailog && (
-        <DeleteUserForm
-          id={userId}
-          setModal={setDeleteDailog}
-          user={currentUser}
-        />
-      )}
-      {openViewDialog && (
-        <Display id={userId} setModal={setopenViewDialog} user={currentUser} />
-      )}
-    </Box>
+        {modalState && (
+          <EditUserForm
+            edit={true}
+            id={userId}
+            setModal={setModalState}
+            user={currentUser}
+          />
+        )}
+        {deleteDailog && (
+          <DeleteUserForm
+            id={userId}
+            setModal={setDeleteDailog}
+            user={currentUser}
+          />
+        )}
+        {openViewDialog && (
+          <Display
+            id={userId}
+            setModal={setopenViewDialog}
+            user={currentUser}
+          />
+        )}
+      </Box>
+      {/* </>
+      )} */}
+    </>
   );
 }
 

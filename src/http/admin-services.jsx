@@ -1,28 +1,3 @@
-// import { api } from "./api";
-
-// export const adminService = {
-//   getloginUser: async () => {
-//     try {
-//       const user = await api.get(`/login`);
-//       if (user) {
-//         console.log("user", user);
-//         // dispatch(getuser(user));
-//         //   return Promise.resolve(user);
-//       }
-//     } catch (error) {
-//       return Promise.reject(error);
-//     }
-//   },
-//   // To display the packages
-
-//   // getPackages : async()=>
-//   // {
-//   //   try{
-//   //     const packages = await api.get("/")
-//   //   }
-//   // }
-// };
-
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import {
@@ -102,9 +77,9 @@ export const adminService = {
     try {
       const url = `http://localhost:8888/package/packages/${id}`;
       const response = await axios.patch(url, values);
-      console.log("values", values);
+      // console.log("values", values);
 
-      console.log("res", response);
+      // console.log("res", response);
       if (response) {
         dispatch(updatePackage(response.data));
 
@@ -139,7 +114,7 @@ export const adminService = {
       const url = `http://localhost:8888/package/updateStatus/${id}`;
       const response = await axios.patch(url, values);
       if (response) {
-        console.log(response);
+        // console.log(response);
         dispatch(updateStatuss(response.data));
         return Promise.resolve(response);
       }
@@ -163,11 +138,11 @@ export const adminService = {
     const { searchTerm, rowsPerPage, page, select, sortBy } = query;
     try {
       if (searchTerm) {
-        console.log("search", searchTerm);
+        // console.log("search", searchTerm);
         const response = await axios.get(
           `http://localhost:8888/users/search?searchTerm=${searchTerm}&page=${page}&limit=${rowsPerPage}`
         );
-        console.log(response, "response with search term ");
+        // console.log(response, "response with search term ");
 
         if (response) {
           dispatch(getUsers(response.data));
@@ -178,11 +153,11 @@ export const adminService = {
         const response = await axios.get(
           `http://localhost:8888/users/search?limit=${rowsPerPage}&page=${page}`
         );
-        console.log("no search res", response);
+        // console.log("no search res", response);
 
         if (response) {
           dispatch(getUsers(response.data));
-          console.log("res", response.data);
+          // console.log("res", response.data);
           return Promise.resolve(response);
         }
       }
@@ -193,12 +168,12 @@ export const adminService = {
   deleteUsers: async (dispatch, id) => {
     try {
       const url = `http://localhost:8888/users/delete/${id}`;
-      console.log("id", id);
+      // console.log("id", id);
       const response = await axios.delete(url);
-      console.log(
-        "🚀 ~ file: admin-services.jsx:140 ~ deleteUsers: ~ response",
-        response
-      );
+      // console.log(
+      //   "🚀 ~ file: admin-services.jsx:140 ~ deleteUsers: ~ response",
+      //   response
+      // );
       if (response) {
         dispatch(deleteUser(response.data));
         return Promise.resolve(response);
@@ -211,12 +186,12 @@ export const adminService = {
     try {
       //processing
       const url = `http://localhost:8888/users/update/${id}`;
-      console.log("id", id);
+      // console.log("id", id);
       const response = await axios.patch(url, values);
-      console.log(
-        "🚀 ~ file: admin-services.jsx:159 ~ updateUsers: ~ response",
-        response
-      );
+      // console.log(
+      //   "🚀 ~ file: admin-services.jsx:159 ~ updateUsers: ~ response",
+      //   response
+      // );
 
       if (response) {
         dispatch(updateUser(response.data));
@@ -272,9 +247,9 @@ export const adminService = {
     try {
       const url = `http://localhost:8888/membership/memberships/${id}`;
       const response = await axios.delete(url, id);
-      console.log(response);
+      // console.log(response);
       if (response) {
-        console.log(response.data);
+        // console.log(response.data);
         dispatch(deleteMembership(response.data));
         return Promise.resolve(response);
       }
@@ -299,7 +274,7 @@ export const adminService = {
       const url = `http://localhost:8888/payment/payments`;
       const response = await axios.post(url, values);
       if (response) {
-        console.log(response);
+        // console.log(response);
         dispatch(updateMembership(response.data));
         return Promise.resolve(response);
       }

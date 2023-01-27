@@ -28,7 +28,7 @@ export const usersSlice = createSlice({
     //   total: action.payload.total,
     // }),
     deleteUser: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       return {
         ...state,
         users: state.users.filter(
@@ -38,12 +38,12 @@ export const usersSlice = createSlice({
     },
     updateUser: (state, action) => {
       //update code for reducer
-      console.log(action.payload);
+      // console.log(action.payload);
       const userLists = [...state.users];
       let index = userLists.findIndex(
         (user) => user.id === action.payload.data.id
       );
-      console.log("index,", index);
+      // console.log("index,", index);
       userLists[index] = action.payload.data;
       return {
         users: userLists,
