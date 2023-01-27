@@ -19,6 +19,7 @@ import Header from "./Membership/Header";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { Stack } from "@mui/material";
+import Progress from "./Progress";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DeleteMembershipForm from "./Membership/DeleteMembershipForm";
@@ -258,143 +259,165 @@ export default function EnhancedTable() {
   //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Header />
+    <>
+      {loading ? (
+        <Progress />
+      ) : (
+        <>
+          <Box sx={{ width: "100%" }}>
+            <Header />
 
-      <Paper sx={{ width: "100%", mb: 2, mt: 2, backgroundColor: "#C4FAC3" }}>
-        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            // size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              // numSelected={selected.length}
-              sx={{ backgroundColor: "#EDF3E8" }}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={membershipDetails.length}
-            />
-            <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+            <Paper
+              sx={{ width: "100%", mb: 2, mt: 2, backgroundColor: "#C4FAC3" }}
+            >
+              {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
+              <TableContainer>
+                <Table
+                  sx={{ minWidth: 750 }}
+                  aria-labelledby="tableTitle"
+                  // size={dense ? 'small' : 'medium'}
+                >
+                  <EnhancedTableHead
+                    // numSelected={selected.length}
+                    sx={{ backgroundColor: "#EDF3E8" }}
+                    order={order}
+                    orderBy={orderBy}
+                    onSelectAllClick={handleSelectAllClick}
+                    onRequestSort={handleRequestSort}
+                    rowCount={membershipDetails.length}
+                  />
+                  <TableBody sx={{ backgroundColor: "#EDF3E8" }}>
+                    {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(ge tComparator(order, orderBy)).slice() */}
 
-              {membershipDetails &&
-                stableSort(membershipDetails, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  ?.map((row, index) => {
-                    const isItemSelected = isSelected(row.name);
-                    const labelId = `enhanced-table-checkbox-${index}`;
+                    {membershipDetails &&
+                      stableSort(
+                        membershipDetails,
+                        getComparator(order, orderBy)
+                      )
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        ?.map((row, index) => {
+                          const isItemSelected = isSelected(row.name);
+                          const labelId = `enhanced-table-checkbox-${index}`;
 
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.id)}
-                        // role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        // key={row.id}
-                        // selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          {/* <Checkbox
+                          return (
+                            <TableRow
+                              hover
+                              onClick={(event) => handleClick(event, row.id)}
+                              // role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              // key={row.id}
+                              // selected={isItemSelected}
+                            >
+                              <TableCell padding="checkbox">
+                                {/* <Checkbox
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
                             'aria-labelledby': labelId,
                           }}
                         /> */}
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="none"
-                        >
-                          {row.userId?.name}
-                        </TableCell>
-                        <TableCell align="right">{row.package?.name}</TableCell>
-                        <TableCell align="right">
-                          {row.payment?.paid_via}
-                        </TableCell>
-                        <TableCell align="right">
-                          {moment.unix(row?.start_date).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell align="right">
-                          {moment.unix(row?.end_date).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.package?.price}
-                        </TableCell>
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                id={labelId}
+                                scope="row"
+                                padding="none"
+                              >
+                                {row.userId?.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {row.package?.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {row.payment?.paid_via}
+                              </TableCell>
+                              <TableCell align="right">
+                                {moment
+                                  .unix(row?.start_date)
+                                  .format("MM-DD-YYYY")}
+                              </TableCell>
+                              <TableCell align="right">
+                                {moment
+                                  .unix(row?.end_date)
+                                  .format("MM-DD-YYYY")}
+                              </TableCell>
+                              <TableCell align="right">
+                                {row?.package?.price}
+                              </TableCell>
 
-                        <TableCell>
-                          <Stack
-                            direction="row"
-                            alignItems="right"
-                            spacing={3}
-                            display="flex"
-                          >
-                            <EditIcon
-                              sx={{
-                                "& :hover": { color: "red" },
-                                cursor: "pointer",
-                                color: "blue",
-                              }}
-                              onClick={
-                                () =>
-                                  openEditMembershipForm(row.id, row) &&
-                                  console.log(row)
-                                // alert("hello")
-                                // console.log(row._id, row)
-                              }
-                            />
-                            <DeleteOutlineOutlinedIcon
-                              sx={{
-                                "& :hover": { color: "red" },
-                                cursor: "pointer",
-                                color: "red",
-                              }}
-                              onClick={() =>
-                                openDeleteMebershipDialog(row.id, row)
-                              }
-                            />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          colSpan={4}
-          count={membershipDetails ? membershipDetails.length : null}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ backgroundColor: "#D8E6CC" }}
-        />
-        {deleteDailog && (
-          <DeleteMembershipForm
-            id={membershipId}
-            membership={currentmembership}
-            setModal={setDeleteDailog}
-          />
-        )}
-        {editDailog && (
-          <EditMembershipForm
-            id={membershipId}
-            membership={currentmembership}
-            setModal={setEditDailog}
-          />
-        )}
-      </Paper>
-    </Box>
+                              <TableCell>
+                                <Stack
+                                  direction="row"
+                                  alignItems="right"
+                                  spacing={3}
+                                  display="flex"
+                                >
+                                  <EditIcon
+                                    sx={{
+                                      "& :hover": { color: "red" },
+                                      cursor: "pointer",
+                                      color: "blue",
+                                    }}
+                                    onClick={
+                                      () =>
+                                        openEditMembershipForm(row.id, row) &&
+                                        console.log(row)
+                                      // alert("hello")
+                                      // console.log(row._id, row)
+                                    }
+                                  />
+                                  <DeleteOutlineOutlinedIcon
+                                    sx={{
+                                      "& :hover": { color: "red" },
+                                      cursor: "pointer",
+                                      color: "red",
+                                    }}
+                                    onClick={() =>
+                                      openDeleteMebershipDialog(row.id, row)
+                                    }
+                                  />
+                                </Stack>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                colSpan={4}
+                count={membershipDetails ? membershipDetails.length : null}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{ backgroundColor: "#D8E6CC" }}
+              />
+              {deleteDailog && (
+                <DeleteMembershipForm
+                  id={membershipId}
+                  membership={currentmembership}
+                  setModal={setDeleteDailog}
+                />
+              )}
+              {editDailog && (
+                <EditMembershipForm
+                  id={membershipId}
+                  membership={currentmembership}
+                  setModal={setEditDailog}
+                />
+              )}
+            </Paper>
+          </Box>
+        </>
+      )}
+    </>
   );
 }
