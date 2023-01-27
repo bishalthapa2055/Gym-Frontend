@@ -33,6 +33,7 @@ import Progress from "../Progress";
 import { api } from "../../http/api";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "react-query";
+import debounce from "lodash.debounce";
 
 function Userstable() {
   const [users, setUsers] = useState([]);
@@ -127,6 +128,25 @@ function Userstable() {
     setSearchTerm(String(search));
   };
 
+  var debounce_fun = debounce(function (searchTerm) {
+    const value = searchTerm;
+    if (value !== undefined) {
+      // setSearchValue(value);
+      setSearchTerm(value);
+    } else {
+      console.log("unable to search the userws");
+    }
+  }, 400);
+
+  const handleSearchTerm = async (searchTerm) => {
+    // setDependentSearch(searchTerm);
+    debounce_fun(searchTerm);
+  };
+
+  // const handleSearchTerm = () => {
+  //   const searchTerm = e.target.value;
+  // };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage + 1);
   };
@@ -170,7 +190,7 @@ function Userstable() {
                   </InputAdornment>
                 ),
               }}
-              onChange={changeSearchTerm}
+              onChange={(e) => handleSearchTerm(e.target.value)}
               placeholder="Search  Users"
               // value={dependentSearch.current}
               size="small"
@@ -308,7 +328,7 @@ function Userstable() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 15, 20, 25]}
             component="div"
-            count={result ? result : total}
+            count={total}
             rowsPerPage={rowsPerPage}
             page={page - 1}
             onPageChange={handleChangePage}

@@ -165,7 +165,7 @@ export const adminService = {
       if (searchTerm) {
         console.log("search", searchTerm);
         const response = await axios.get(
-          `http://localhost:8888/users/search?searchTerm=${searchTerm}`
+          `http://localhost:8888/users/search?searchTerm=${searchTerm}&page=${page}&limit=${rowsPerPage}`
         );
         console.log(response, "response with search term ");
 
