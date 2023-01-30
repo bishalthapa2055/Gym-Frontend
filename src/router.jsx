@@ -5,6 +5,7 @@ import Packages from "./Components/Packages";
 // import { Routes, Route } from "react-router-dom";
 import Memberships from "./Components/Membership";
 import Login from "./login";
+import Profile from "../src/Components/profile";
 
 let status = true;
 status = localStorage.getItem("accessToken") ? true : false;
@@ -186,6 +187,15 @@ const routes = [
           {
             path: "/packages",
             element: <Packages />,
+          },
+        ],
+      },
+      {
+        path: "/",
+        children: [
+          {
+            path: "/profile",
+            element: <Profile />,
           },
         ],
       },

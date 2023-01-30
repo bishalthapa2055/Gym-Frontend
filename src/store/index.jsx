@@ -1,7 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import ReduxThunk from "redux-thunk";
 
-import { usersSlice, packagesSlice, membershipSlice } from "./Reducers/index";
+import {
+  usersSlice,
+  packagesSlice,
+  membershipSlice,
+  loginSlice,
+} from "./Reducers/index";
 
 export const middlewares = [ReduxThunk];
 
@@ -11,6 +16,7 @@ export const store = configureStore({
     user: usersSlice.reducer,
     packages: packagesSlice.reducer,
     memberships: membershipSlice.reducer,
+    login: loginSlice.reducer,
   },
   middleware: middlewares,
 });

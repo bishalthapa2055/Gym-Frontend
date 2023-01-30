@@ -24,6 +24,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firebase } from "../../firebase_config";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
 // import firebase from "firebase";
 // import { auth } from "../../firebase_config.js";
 // import { firebase } from "./firebase_config";
@@ -31,6 +32,7 @@ import Login from "../../login";
 import { useSnackbar } from "notistack";
 import { Stack } from "@mui/system";
 import LogoutDailog from "./logoutDailog";
+import HeaderUserbox from "../logout/logout";
 
 const drawerWidth = 240;
 
@@ -56,6 +58,11 @@ const data = [
     title: "PACKAGES",
     Link: "/packages",
     icon: <InventoryIcon />,
+  },
+  {
+    title: "PROFILE",
+    Link: "/profile",
+    icon: <PersonIcon />,
   },
 ];
 
@@ -238,6 +245,8 @@ export default function Slider() {
               // onClick={Logout}
               onClick={logOut}
             />
+            {/* // for logout */}
+            <HeaderUserbox />
           </Toolbar>
         </AppBar>
         <Drawer

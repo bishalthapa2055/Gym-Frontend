@@ -12,6 +12,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { userServices } from "./http/user-services.jsx";
 import { useSnackbar } from "notistack";
 import { Button } from "@mui/material";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   width: 100vw;
@@ -47,6 +48,7 @@ const Login = () => {
   const [display, setDisplay] = useState(false);
   const [notallowded, setNotallowded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
   const signin = () => {
     if (mynumber === "" || mynumber.length < 10) return;
@@ -99,6 +101,7 @@ const Login = () => {
         //   navigate("/") || <Login />;
         // }
         // user && res.data.status === true ? <App1 /> : <Notallowded />;
+        // const response = await adminService
         function fetchData() {
           if (res.data.status === true) {
             // return Promise.resolve(res);
@@ -118,6 +121,9 @@ const Login = () => {
           }
         }
         fetchData();
+
+        const response = await adminService.getLogin(dispatch);
+        console.log("🚀 ~ file: login.js:126 ~ .then ~ response", response)
         console.log("🚀 ~ file: login.js:81 ~ .then ~ res", res.data.status);
         // const res = await userServices.login(accessToken, number);
         // console.log("resr", res);

@@ -7,6 +7,7 @@ import axios from "axios";
 // import { adminService } from "@/src/http/admin-service";
 // import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
+import CardMembershipIcon from "@mui/icons-material/CardMembership";
 
 import { People } from "@mui/icons-material";
 import Login from "../login";
@@ -64,6 +65,13 @@ function DashboardContent() {
     {
       logo: <LoyaltyIcon />,
       title: "MEMBERSHIPS",
+      //   count: dashboardStats.users,
+      //   count: 20,
+      count: countMembership,
+    },
+    {
+      logo: <CardMembershipIcon />,
+      title: "ACTIVE MEMBERSHIP",
       //   count: dashboardStats.users,
       //   count: 20,
       count: countMembership,

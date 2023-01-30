@@ -350,7 +350,7 @@ const MembershipForm = ({ setModal }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    label="price"
+                    // label="price"
                     id="price"
                     variant="outlined"
                     value={price}
