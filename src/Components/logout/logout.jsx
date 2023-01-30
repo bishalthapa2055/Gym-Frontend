@@ -53,9 +53,9 @@ const UserBoxLabel = experimentalStyled(Typography)(
   ({ theme }) => `
         font-weight: ${theme.typography.fontWeightBold};
          color: ${theme.palette.primary.dark}
-      
+
         display: block;
-        white-space: nowrap;
+        // white-space: nowrap;
 `
 );
 

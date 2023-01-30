@@ -33,6 +33,8 @@ import { useSnackbar } from "notistack";
 import { Stack } from "@mui/system";
 import LogoutDailog from "./logoutDailog";
 import HeaderUserbox from "../logout/logout";
+import logout from "../logout";
+import LogOut from "../logout";
 
 const drawerWidth = 240;
 
@@ -246,7 +248,8 @@ export default function Slider() {
               onClick={logOut}
             />
             {/* // for logout */}
-            <HeaderUserbox />
+            <LogOut />
+            {/* <HeaderUserbox /> */}
           </Toolbar>
         </AppBar>
         <Drawer
