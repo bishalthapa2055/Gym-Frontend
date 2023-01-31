@@ -25,6 +25,7 @@ import MuiAlert from "@mui/material/Alert";
 import { api } from "../../http/api";
 import { adminService } from "../../http/admin-services";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
 import { useSnackbar } from "notistack";
@@ -34,6 +35,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const EditMembershipForm = ({ id, membership, setModal }) => {
+  const data = useSelector((state) => state.packages?.packges);
+  console.log(data, "this is packages data");
   const [open, setOpen] = React.useState(false);
   const [startValue, setStartValue] = React.useState();
   const [paymentOption, setPaymentOption] = useState("cash");
@@ -46,6 +49,8 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   const [searchedPackage, setSearchedPackage] = useState([]);
   const [name, setName] = useState(membership.userId?.name);
   const [openn, setOpenn] = React.useState(false);
+  const [packageName, setPackageName] = useState(membership.package?.name);
+  // console.log("mmm", membership.package.name);
 
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -56,6 +61,7 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   //   }
   //   setOpen(false);
   // };
+
   console.log("membership", membership);
   const handleClose = () => {
     setOpen(false);
@@ -135,7 +141,12 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   const convertStartDate = (e) => {
     // process date
     let date_string = e;
+    console.log(e);
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
+    console.log(
+      "🚀 ~ file: EditMembershipForm.jsx:142 ~ convertStartDate ~ date_obj",
+      date_obj
+    );
     let unix_timestamp = date_obj.unix();
 
     setStartValue(e);
@@ -208,6 +219,7 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                     disablePortal
                     options={searchedPackage}
                     id="combo-box-demo"
+                    // defaultValue={membership.package.name}
                     getOptionLabel={(option) => option?.name}
                     onChange={(e, data) => {
                       console.log("id package", data.id);

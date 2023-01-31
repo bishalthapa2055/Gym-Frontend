@@ -59,6 +59,7 @@ const MembershipForm = ({ setModal }) => {
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startValue, setStartValue] = React.useState();
+  const [durations, setDurations] = useState();
 
   const [endValue, setEndValue] = React.useState();
   const [price, setPrice] = useState();
@@ -83,12 +84,17 @@ const MembershipForm = ({ setModal }) => {
   };
   console.log("date", startDate);
   console.log("idd", fieldValue);
+  console.log("duration", durations);
 
   const convertStartDate = (e) => {
     // process date
     let date_string = e;
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
     let unix_timestamp = date_obj.unix();
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:92 ~ convertStartDate ~ unix_timestamp for start date",
+      unix_timestamp
+    );
     // // console.log(unix_timestamp);
     // let date_obj = moment(date_string, "MM DD YYYY");
     // let date = moment(date_string).format("MM-DD-YYYY");
@@ -97,6 +103,40 @@ const MembershipForm = ({ setModal }) => {
     // setStartValue(date_obj);
     setStartValue(e);
     setStartDate(unix_timestamp);
+
+    // for converting and fixing the date according to the package duration
+
+    let timestamp = unix_timestamp;
+    let date = new Date(timestamp * 1000);
+
+    let options = {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short",
+    };
+
+    const end_timestamp = date.toLocaleString("en-US", options);
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:122 ~ convertStartDate ~ end_timestamp",
+      end_timestamp
+    );
+
+    const updatedDate = date.toLocaleString("en-US", options);
+    let enddate = new Date(updatedDate);
+    let newDate = new Date(
+      enddate.getTime() + { durations } * 24 * 60 * 60 * 1000
+    );
+    const timestampEnd = Math.floor(newDate.getTime() / 1000);
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
+      timestampEnd
+    );
+    console.log(Math.floor(newDate.getTime() / 1000));
   };
   const changeEndDate = (e) => {
     // let date_string = e;
@@ -294,6 +334,7 @@ const MembershipForm = ({ setModal }) => {
                       console.log("price", data.price);
                       setPrice(data.price);
                       setPackageId(data.id);
+                      setDurations(data.duration_in_days);
                     }}
                     noOptionsText={
                       loading ? <CircularProgress /> : "No Package found"
@@ -350,7 +391,7 @@ const MembershipForm = ({ setModal }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    label="price"
+                    // label="price"
                     id="price"
                     variant="outlined"
                     value={price}

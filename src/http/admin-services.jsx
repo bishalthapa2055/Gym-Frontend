@@ -14,10 +14,32 @@ import {
   createMembership,
   deleteMembership,
   updateMembership,
+  getDetails,
 } from "../store/Reducers";
+import { api } from "./api";
 
 export const adminService = {
   // const dispatch = useDispatch();
+
+  //login details
+  getLogin: async (dispatch) => {
+    try {
+      const url = `http://localhost:8888/api/web/login`;
+      const response = await api.post(url);
+      // console.log("values", values);
+
+      // console.log("res", response);
+      if (response) {
+        console.log(response);
+        dispatch(getDetails(response));
+
+        // getPackages(response);
+        return Promise.resolve(response);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 
   // thhis is for packages details
   getPackages: async (dispatch, query) => {
