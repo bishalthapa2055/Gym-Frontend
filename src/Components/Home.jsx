@@ -12,11 +12,14 @@ import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import { People } from "@mui/icons-material";
 import Login from "../login";
 import { api } from "../http/api";
+import AttachMoneyTwoToneIcon from "@mui/icons-material/AttachMoneyTwoTone";
 import Progress from "./Progress";
 
 function DashboardContent() {
   const [countUser, setCountUser] = useState();
   const [countMembership, setCountMembership] = useState();
+  const [countActiveMembership, setCountActiveMembership] = useState();
+  const [countPrice, setCountPrice] = useState();
   const [display, setDisplay] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   //   const dispatch = useAppDispatch()
@@ -38,6 +41,19 @@ function DashboardContent() {
     api.get("/membership/count").then(function (response) {
       // console.log(response.data.count);
       setCountMembership(response?.count);
+
+      // console.log(response);
+    });
+    api.get("/memberships/checkdates").then(function (response) {
+      // console.log(response.data.count);
+      setCountActiveMembership(response?.count);
+
+      // console.log(response);
+    });
+    api.get("/memberships/findsum").then(function (response) {
+      // console.log(response.data.count);
+      setCountPrice(response?.data);
+
       // console.log(response);
     });
     setIsLoading(true);
@@ -74,7 +90,14 @@ function DashboardContent() {
       title: "ACTIVE MEMBERSHIP",
       //   count: dashboardStats.users,
       //   count: 20,
-      count: countMembership,
+      count: countActiveMembership,
+    },
+    {
+      logo: <AttachMoneyTwoToneIcon />,
+      title: "TOTAL EARNING (RS)",
+      //   count: dashboardStats.users,
+      // count: 20,
+      count: countPrice,
     },
   ];
 

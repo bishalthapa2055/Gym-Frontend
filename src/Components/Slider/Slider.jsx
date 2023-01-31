@@ -241,12 +241,12 @@ export default function Slider() {
               </Typography>
             </Stack>
 
-            <LogoutIcon
+            {/* <LogoutIcon
               sx={{ color: "red ", cursor: "pointer" }}
               color="red "
               // onClick={Logout}
               onClick={logOut}
-            />
+            /> */}
             {/* // for logout */}
             <LogOut />
             {/* <HeaderUserbox /> */}

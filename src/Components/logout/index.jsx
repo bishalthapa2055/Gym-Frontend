@@ -7,13 +7,15 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import LockOpenTwoToneIcon from "@mui/icons-material/LockOpenTwoTone";
 import { useSelector } from "react-redux";
-
+import { auth, firebase } from "../../firebase_config";
+import { useSnackbar } from "notistack";
 export default function LogOut() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [isOpen, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
   const data = useSelector((state) => state.login.data);
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -22,7 +24,33 @@ export default function LogOut() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const logout = async (e) => {
+    e.preventDefault();
 
+    await firebase
+      .auth()
+      .signOut()
+      .then(function () {
+        // console.log("Successfully signed out.");
+        localStorage.removeItem("accessToken");
+        enqueueSnackbar("Log Out Sucessfully", {
+          variant: "success",
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
+
+        navigate("/login", {
+          replace: true,
+        });
+        window.location.reload();
+      })
+      .catch(function (error) {
+        // console.log(error);
+        // console.log("An error occurred");
+      });
+  };
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
@@ -66,12 +94,16 @@ export default function LogOut() {
           <Button
             color="primary"
             fullWidth
-            onClick={() => {
-              localStorage.removeItem("accessToken");
-              navigate("/login", {
-                replace: true,
-              });
-            }}
+            //   onClick={
+            //     () =>
+            //      {
+            //     localStorage.removeItem("accessToken");
+            //     navigate("/login", {
+            //       replace: true,
+            //     });
+            //      }
+            // }
+            onClick={logout}
           >
             <LockOpenTwoToneIcon sx={{ mr: 1 }} />
             Sign out
