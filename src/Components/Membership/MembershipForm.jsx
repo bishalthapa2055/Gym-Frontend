@@ -69,6 +69,9 @@ const MembershipForm = ({ setModal }) => {
   const [packageId, setPackageId] = useState();
   const [openn, setOpenn] = useState(false);
 
+  const [endDateTimestamp, setendDateTimestamp] = useState();
+  const [endFullDate, setEndFullDate] = useState();
+
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -82,19 +85,19 @@ const MembershipForm = ({ setModal }) => {
   const handleeOpen = () => {
     setOpenn(true);
   };
-  console.log("date", startDate);
-  console.log("idd", fieldValue);
-  console.log("duration", durations);
+  // console.log("date", startDate);
+  // console.log("idd", fieldValue);
+  // console.log("duration", durations);
 
   const convertStartDate = (e) => {
     // process date
     let date_string = e;
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
     let unix_timestamp = date_obj.unix();
-    console.log(
-      "🚀 ~ file: MembershipForm.jsx:92 ~ convertStartDate ~ unix_timestamp for start date",
-      unix_timestamp
-    );
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:92 ~ convertStartDate ~ unix_timestamp for start date",
+    //   unix_timestamp
+    // );
     // // console.log(unix_timestamp);
     // let date_obj = moment(date_string, "MM DD YYYY");
     // let date = moment(date_string).format("MM-DD-YYYY");
@@ -120,24 +123,37 @@ const MembershipForm = ({ setModal }) => {
       timeZoneName: "short",
     };
 
-    const end_timestamp = date.toLocaleString("en-US", options);
-    console.log(
-      "🚀 ~ file: MembershipForm.jsx:122 ~ convertStartDate ~ end_timestamp",
-      end_timestamp
-    );
+    // const end_timestamp = date.toLocaleString("en-US", options);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:122 ~ convertStartDate ~ end_timestamp",
+    //   end_timestamp
+    // );
 
     const updatedDate = date.toLocaleString("en-US", options);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
+    //   updatedDate
+    // );
     let enddate = new Date(updatedDate);
-    let newDate = new Date(
-      enddate.getTime() + { durations } * 24 * 60 * 60 * 1000
-    );
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:138 ~ convertStartDate ~ enddate",
+    //   enddate
+    // );
+    let newDate = new Date(enddate.getTime() + durations * 24 * 60 * 60 * 1000);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:132 ~ convertStartDate ~ newDate",
+    //   newDate
+    // );
     const timestampEnd = Math.floor(newDate.getTime() / 1000);
-    console.log(
-      "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
-      timestampEnd
-    );
-    console.log(Math.floor(newDate.getTime() / 1000));
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
+    //   timestampEnd
+    // );
+    setEndFullDate(newDate);
+    setendDateTimestamp(timestampEnd);
   };
+  // console.log("hh", endFullDate);
+  // console.log(",,", endDateTimestamp);
   const changeEndDate = (e) => {
     // let date_string = e;
     // // console.log("end-data", e);
@@ -148,7 +164,7 @@ const MembershipForm = ({ setModal }) => {
     let date_string = e;
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
     let unix_timestamp = date_obj.unix();
-    console.log("end  date", e);
+    // console.log("end  date", e);
     // setEndValue(date_obj);
     setEndValue(e);
     setEndDate(unix_timestamp);
@@ -190,7 +206,7 @@ const MembershipForm = ({ setModal }) => {
         const values = {
           userId: userId,
           start_date: startDate,
-          end_date: endDate,
+          end_date: endDateTimestamp,
           package: packageId,
           payment: payId,
         };
@@ -316,10 +332,14 @@ const MembershipForm = ({ setModal }) => {
                 <Grid item xs={3}>
                   <DesktopDatePicker
                     label="End Date"
-                    value={endValue}
-                    onChange={changeEndDate}
+                    // value={endValue}
+                    value={endFullDate}
+                    // onChange={changeEndDate}
                     renderInput={(params) => <TextField {...params} />}
-                  />
+                    readOnly
+                  >
+                    {endFullDate}
+                  </DesktopDatePicker>
                 </Grid>
                 <Grid item xs={9}>
                   <Autocomplete
@@ -330,8 +350,8 @@ const MembershipForm = ({ setModal }) => {
                     id="combo-box-demo"
                     getOptionLabel={(option) => option?.name}
                     onChange={(e, data) => {
-                      console.log("id package", data.id);
-                      console.log("price", data.price);
+                      // console.log("id package", data.id);
+                      // console.log("price", data.price);
                       setPrice(data.price);
                       setPackageId(data.id);
                       setDurations(data.duration_in_days);
@@ -378,7 +398,7 @@ const MembershipForm = ({ setModal }) => {
                             const url = `http://localhost:8888/package/published?searchTerm=${e.target.value}`;
                             const response = await axios.get(url);
 
-                            console.log(response.data?.data);
+                            // console.log(response.data?.data);
                             setLoading(false);
                             setSearchedPackage(response.data?.data);
                           }
@@ -395,7 +415,9 @@ const MembershipForm = ({ setModal }) => {
                     id="price"
                     variant="outlined"
                     value={price}
-                  />
+                  >
+                    {/* {price} */}
+                  </TextField>
                 </Grid>
                 {/*  */}
                 {/* <Grid item xs={6}>
@@ -423,9 +445,10 @@ const MembershipForm = ({ setModal }) => {
                     onOpen={handleeOpen}
                     value={paymentOption}
                     label="Payment"
-                    onChange={(e) =>
-                      setPaymentOption(e.target.value) &&
-                      console.log(e.target.value)
+                    onChange={
+                      (e) => setPaymentOption(e.target.value)
+                      //  &&
+                      // console.log(e.target.value)
                     }
                     default="cash"
                   >

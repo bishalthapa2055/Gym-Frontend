@@ -36,7 +36,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const EditMembershipForm = ({ id, membership, setModal }) => {
   const data = useSelector((state) => state.packages?.packges);
-  console.log(data, "this is packages data");
+
   const [open, setOpen] = React.useState(false);
   const [startValue, setStartValue] = React.useState();
   const [paymentOption, setPaymentOption] = useState("cash");
@@ -50,7 +50,19 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   const [name, setName] = useState(membership.userId?.name);
   const [openn, setOpenn] = React.useState(false);
   const [packageName, setPackageName] = useState(membership.package?.name);
-  // console.log("mmm", membership.package.name);
+  const [packagePrice, setPackagePrice] = useState(membership.package?.price);
+  const [startDateDefault, setStartDateDefault] = useState(
+    moment.unix(membership.start_date).format("YYYY-MM-DD ")
+  );
+  const [endDateDefault, setEndDateDefault] = useState(
+    moment.unix(membership.end_date).format("YYYY-MM-DD ")
+  );
+  const [durations, setDurations] = useState();
+  // console.log(
+  //   "🚀 ~ file: EditMembershipForm.jsx:61 ~ EditMembershipForm ~ durations",
+  //   durations
+  // );
+  // console.log("mmm", membership.package.name);i
 
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -62,7 +74,7 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   //   setOpen(false);
   // };
 
-  console.log("membership", membership);
+  // console.log("membership", membership);
   const handleClose = () => {
     setOpen(false);
   };
@@ -98,7 +110,7 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
           paymentId,
           paymentData
         );
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           // const membershipUrl = `http://localhost:8888/membership/memberships/${id}`;
           const datas = {
@@ -141,22 +153,61 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
   const convertStartDate = (e) => {
     // process date
     let date_string = e;
-    console.log(e);
+    // console.log(e);
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
-    console.log(
-      "🚀 ~ file: EditMembershipForm.jsx:142 ~ convertStartDate ~ date_obj",
-      date_obj
-    );
+    // console.log(
+    //   "🚀 ~ file: EditMembershipForm.jsx:142 ~ convertStartDate ~ date_obj",
+    //   date_obj
+    // );
     let unix_timestamp = date_obj.unix();
 
     setStartValue(e);
     setStartDate(unix_timestamp);
+
+    // for adding durations in end date
+
+    let timestamp = unix_timestamp;
+    let date = new Date(timestamp * 1000);
+
+    let options = {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short",
+    };
+
+    const updatedDate = date.toLocaleString("en-US", options);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
+    //   updatedDate
+    // );
+    let enddate = new Date(updatedDate);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:138 ~ convertStartDate ~ enddate",
+    //   enddate
+    // );
+    let newDate = new Date(enddate.getTime() + durations * 24 * 60 * 60 * 1000);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:132 ~ convertStartDate ~ newDate",
+    //   newDate
+    // );
+    setEndValue(newDate);
+    const timestampEnd = Math.floor(newDate.getTime() / 1000);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
+    //   timestampEnd
+    // );
+    setEndDate(timestampEnd);
   };
   const changeEndDate = (e) => {
     let date_string = e;
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
     let unix_timestamp = date_obj.unix();
-    console.log("end  date", e);
+    // console.log("end  date", e);
     // setEndValue(date_obj);
     setEndValue(e);
     setEndDate(unix_timestamp);
@@ -194,12 +245,14 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                 <Grid item xs={3}>
                   <DesktopDatePicker
                     label="Start Date"
-                    value={startValue}
+                    // value={startValue}
                     // onChange={(e, newValue) => {
                     //   console.log("new", newValue);
                     //   console.log(e);
                     //   setValue(e);
                     // }}
+
+                    value={startValue ? startValue : startDateDefault}
                     onChange={convertStartDate}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -207,7 +260,8 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                 <Grid item xs={3}>
                   <DesktopDatePicker
                     label="End Date"
-                    value={endValue}
+                    // value={endValue}
+                    value={endValue ? endValue : endDateDefault}
                     onChange={changeEndDate}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -217,15 +271,16 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                     disableClearable={true}
                     size="small"
                     disablePortal
-                    options={searchedPackage}
                     id="combo-box-demo"
-                    // defaultValue={membership.package.name}
-                    getOptionLabel={(option) => option?.name}
+                    defaultValue={packageName ? packageName : ""}
+                    options={searchedPackage}
+                    getOptionLabel={(option) => option.name || packageName}
                     onChange={(e, data) => {
-                      console.log("id package", data.id);
-                      console.log("price", data.price);
+                      // console.log("id package", data.id);
+                      // console.log("price", data.price);
                       setPrice(data.price);
                       setPackageId(data.id);
+                      setDurations(data.duration_in_days);
                     }}
                     noOptionsText={
                       loading ? <CircularProgress /> : "No Package found"
@@ -269,7 +324,7 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                             const url = `http://localhost:8888/package/published?searchTerm=${e.target.value}`;
                             const response = await axios.get(url);
 
-                            console.log(response.data?.data);
+                            // console.log(response.data?.data);
                             setLoading(false);
                             setSearchedPackage(response.data?.data);
                           }
@@ -285,8 +340,10 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                     // label="price"
                     id="price"
                     variant="outlined"
-                    value={price}
-                  />
+                    value={price ? price : packagePrice}
+                  >
+                    <Typography>RS</Typography>
+                  </TextField>
                 </Grid>
                 <FormControl sx={{ m: 2, minWidth: 200 }}>
                   <InputLabel id="demo-controlled-open-select-label">
@@ -298,9 +355,10 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                     onOpen={handleOpen}
                     value={paymentOption}
                     label="Payment"
-                    onChange={(e) =>
-                      setPaymentOption(e.target.value) &&
-                      console.log(e.target.value)
+                    onChange={
+                      (e) => setPaymentOption(e.target.value)
+                      // &&
+                      // console.log(e.target.value)
                     }
                     default="cash"
                   >
