@@ -8,18 +8,21 @@ import axios from "axios";
 // import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 import { People } from "@mui/icons-material";
 import Login from "../login";
 import { api } from "../http/api";
 import AttachMoneyTwoToneIcon from "@mui/icons-material/AttachMoneyTwoTone";
 import Progress from "./Progress";
+import { useStore } from "react-redux";
 
 function DashboardContent() {
   const [countUser, setCountUser] = useState();
   const [countMembership, setCountMembership] = useState();
   const [countActiveMembership, setCountActiveMembership] = useState();
   const [countPrice, setCountPrice] = useState();
+  const [countPackage, setCountPackage] = useState();
   const [display, setDisplay] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   //   const dispatch = useAppDispatch()
@@ -53,9 +56,23 @@ function DashboardContent() {
     api.get("/memberships/findsum").then(function (response) {
       // console.log(response.data.count);
       setCountPrice(response?.data);
+      // setCountPrice(response);
 
       // console.log(response);
     });
+    // api.get("/memberships/findsum").then(function (response) {
+    //   // console.log(response.data.count);
+    //   setCountPrice(response?.data);
+
+    //   // console.log(response);
+    // });
+    api.get("/packages/count").then(function (response) {
+      // console.log(response.data.count);
+      setCountPackage(response?.count);
+      console.log(response);
+      // console.log(response);
+    });
+
     setIsLoading(true);
   }, []);
   // console.log("user", countUser);
@@ -98,6 +115,13 @@ function DashboardContent() {
       //   count: dashboardStats.users,
       // count: 20,
       count: countPrice,
+    },
+    {
+      logo: <Inventory2OutlinedIcon />,
+      title: "TOTAL PACKAGES",
+      //   count: dashboardStats.users,
+      // count: 20,
+      count: countPackage,
     },
   ];
 

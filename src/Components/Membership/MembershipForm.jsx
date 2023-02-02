@@ -9,14 +9,11 @@ import {
   MenuItem,
   DialogTitle,
   Grid,
-  OutlinedInput,
   TextField,
   Autocomplete,
   Typography,
   Select,
   Snackbar,
-  Menu,
-  InputAdornment,
   CircularProgress,
   Box,
   Divider,
@@ -73,7 +70,7 @@ const MembershipForm = ({ setModal }) => {
   const [endFullDate, setEndFullDate] = useState();
 
   const dispatch = useDispatch();
-
+  console.log("duration", durations);
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -111,6 +108,10 @@ const MembershipForm = ({ setModal }) => {
 
     let timestamp = unix_timestamp;
     let date = new Date(timestamp * 1000);
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:111 ~ convertStartDate ~ date",
+      date
+    );
 
     let options = {
       weekday: "short",
@@ -130,25 +131,25 @@ const MembershipForm = ({ setModal }) => {
     // );
 
     const updatedDate = date.toLocaleString("en-US", options);
-    // console.log(
-    //   "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
-    //   updatedDate
-    // );
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
+      updatedDate
+    );
     let enddate = new Date(updatedDate);
-    // console.log(
-    //   "🚀 ~ file: MembershipForm.jsx:138 ~ convertStartDate ~ enddate",
-    //   enddate
-    // );
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:138 ~ convertStartDate ~ enddate",
+      enddate
+    );
     let newDate = new Date(enddate.getTime() + durations * 24 * 60 * 60 * 1000);
-    // console.log(
-    //   "🚀 ~ file: MembershipForm.jsx:132 ~ convertStartDate ~ newDate",
-    //   newDate
-    // );
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:132 ~ convertStartDate ~ newDate",
+      newDate
+    );
     const timestampEnd = Math.floor(newDate.getTime() / 1000);
-    // console.log(
-    //   "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
-    //   timestampEnd
-    // );
+    console.log(
+      "🚀 ~ file: MembershipForm.jsx:133 ~ convertStartDate ~ timestampEnd",
+      timestampEnd
+    );
     setEndFullDate(newDate);
     setendDateTimestamp(timestampEnd);
   };

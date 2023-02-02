@@ -183,6 +183,7 @@ export default function EnhancedTable() {
   const [countActive, setCountActive] = React.useState();
   const [countAll, setCountAll] = React.useState();
   const [countInActive, setCountInActive] = React.useState();
+  const [countExpired, setCountExpired] = React.useState();
 
   const dispatch = useDispatch();
   const membershipDetails = useSelector(
@@ -271,6 +272,10 @@ export default function EnhancedTable() {
     const response = await adminService.inactiveList(dispatch);
     setCountInActive(response.data.count);
   };
+  const handleExpired = async () => {
+    const response = await adminService.expiredList(dispatch);
+    setCountExpired(response.data.count);
+  };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -311,6 +316,9 @@ export default function EnhancedTable() {
               </Button>
               <Button variant="outlined" color="error" onClick={handleInActive}>
                 INACTIVE {countInActive ? countInActive : ""}
+              </Button>
+              <Button variant="outlined" color="error" onClick={handleExpired}>
+                EXPIRED {countExpired ? countExpired : ""}
               </Button>
             </Stack>
             <Paper
@@ -377,7 +385,9 @@ export default function EnhancedTable() {
                                 {row.userId?.name}
                               </TableCell>
                               <TableCell align="right">
-                                {row.package?.name}
+                                {row.package?.name
+                                  ? row.package?.name
+                                  : "Your Packages Expired"}
                               </TableCell>
                               <TableCell align="right">
                                 {row.payment?.paid_via}
@@ -393,7 +403,9 @@ export default function EnhancedTable() {
                                   .format("MM-DD-YYYY")}
                               </TableCell>
                               <TableCell align="right">
-                                {row?.package?.price}
+                                {row?.package?.price
+                                  ? row?.package?.price
+                                  : "Packages Expired"}
                               </TableCell>
 
                               <TableCell>
