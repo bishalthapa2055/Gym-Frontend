@@ -18,13 +18,14 @@ import { api } from "../http/api";
 import Header from "./Membership/Header";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import { Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import Progress from "./Progress";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DeleteMembershipForm from "./Membership/DeleteMembershipForm";
 import { adminService } from "../http/admin-services";
 import EditMembershipForm from "./Membership/EditMembershipForm";
+import Buttons from "./Membership/buttons";
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -179,11 +180,15 @@ export default function EnhancedTable() {
   const [modalState, setModalState] = React.useState(false);
   const [deleteDailog, setDeleteDailog] = React.useState(false);
   const [editDailog, setEditDailog] = React.useState(false);
+  const [countActive, setCountActive] = React.useState();
+  const [countAll, setCountAll] = React.useState();
+  const [countInActive, setCountInActive] = React.useState();
 
   const dispatch = useDispatch();
   const membershipDetails = useSelector(
     (state) => state.memberships.memberships
   );
+  // console.log(membershipDetails.length);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -234,9 +239,38 @@ export default function EnhancedTable() {
     //   .then((res) => setMemberships(res.data.data))
     //   .catch((err) => console.log(err));
 
-    adminService.getMembership(dispatch);
-    setLoading(false);
+    const fetchData = async () => {
+      const response = await adminService.getMembership(dispatch);
+      // console.log(
+      //   "🚀 ~ file: Membership.jsx:244 ~ fetchData ~ response",
+      //   response.data.data.length
+      // );
+      setCountAll(response.data.data.length);
+      setLoading(false);
+    };
+    fetchData();
   }, [dispatch]);
+  const handleAll = async () => {
+    // alert(" handle all list");
+
+    const response = await adminService.getMembership(dispatch);
+    // console.log(
+    //   "🚀 ~ file: Membership.jsx:249 ~ handleAll ~ response",
+    //   response.data.data.length
+    // );
+    setCountAll(response.data.data.length);
+  };
+
+  const handleActive = async () => {
+    const response = await adminService.activeList(dispatch);
+    // console.log(response.data.count);
+    setCountActive(response.data.count);
+  };
+  const handleInActive = async () => {
+    // alert("handle InActive hist");
+    const response = await adminService.inactiveList(dispatch);
+    setCountInActive(response.data.count);
+  };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -266,7 +300,19 @@ export default function EnhancedTable() {
         <>
           <Box sx={{ width: "100%" }}>
             <Header />
+            {/* <Buttons count={membershipDetails.length} /> */}
 
+            <Stack direction="row" spacing={2}>
+              <Button variant="outlined" color="secondary" onClick={handleAll}>
+                ALL {countAll ? countAll : membershipDetails.length}
+              </Button>
+              <Button variant="outlined" color="success" onClick={handleActive}>
+                ACTIVE {countActive ? countActive : ""}
+              </Button>
+              <Button variant="outlined" color="error" onClick={handleInActive}>
+                INACTIVE {countInActive ? countInActive : ""}
+              </Button>
+            </Stack>
             <Paper
               sx={{ width: "100%", mb: 2, mt: 2, backgroundColor: "#C4FAC3" }}
             >

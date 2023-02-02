@@ -315,4 +315,28 @@ export const adminService = {
       return Promise.reject(error);
     }
   },
+  activeList: async (dispatch) => {
+    try {
+      const url = `http://localhost:8888/membership/checkdateactive`;
+      const response = await axios.get(url);
+      if (response) {
+        dispatch(getMemberships(response.data));
+        return Promise.resolve(response);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  inactiveList: async (dispatch) => {
+    try {
+      const url = `http://localhost:8888/membership/checkdateinactive`;
+      const response = await axios.get(url);
+      if (response) {
+        dispatch(getMemberships(response.data));
+        return Promise.resolve(response);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

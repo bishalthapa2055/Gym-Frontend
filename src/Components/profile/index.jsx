@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
 
 const Index = () => {
   const loginDetails = useSelector((state) => state.login.data);
@@ -36,10 +37,7 @@ const Index = () => {
             Emer. No :{loginDetails.emergency_number}
           </Typography>
           <Typography gutterBottom variant="body2" component="div">
-            Created At :{loginDetails.created}
-          </Typography>
-          <Typography gutterBottom variant="body2" component="div">
-            Admin :{loginDetails.isAdmin}
+            Created At :{moment(loginDetails.created).format("YYYY-MM-DD")}
           </Typography>
         </CardContent>
       </CardActionArea>

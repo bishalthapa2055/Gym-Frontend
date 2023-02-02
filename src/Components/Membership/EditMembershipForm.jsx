@@ -262,7 +262,8 @@ const EditMembershipForm = ({ id, membership, setModal }) => {
                     label="End Date"
                     // value={endValue}
                     value={endValue ? endValue : endDateDefault}
-                    onChange={changeEndDate}
+                    // onChange={changeEndDate}
+                    readOnly
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </Grid>
