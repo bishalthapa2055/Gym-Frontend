@@ -9,6 +9,7 @@ import axios from "axios";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import InventoryIcon from "@mui/icons-material/Inventory";
 
 import { People } from "@mui/icons-material";
 import Login from "../login";
@@ -23,6 +24,7 @@ function DashboardContent() {
   const [countActiveMembership, setCountActiveMembership] = useState();
   const [countPrice, setCountPrice] = useState();
   const [countPackage, setCountPackage] = useState();
+  const [countactivepackages, setCountActivePackages] = useState();
   const [display, setDisplay] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   //   const dispatch = useAppDispatch()
@@ -69,7 +71,13 @@ function DashboardContent() {
     api.get("/packages/count").then(function (response) {
       // console.log(response.data.count);
       setCountPackage(response?.count);
-      console.log(response);
+      // console.log(response);
+      // console.log(response);
+    });
+    api.get("/packages/countactivepackages").then(function (response) {
+      // console.log(response.data.count);
+      setCountActivePackages(response?.count);
+      // console.log(response);
       // console.log(response);
     });
 
@@ -122,6 +130,13 @@ function DashboardContent() {
       //   count: dashboardStats.users,
       // count: 20,
       count: countPackage,
+    },
+    {
+      logo: <InventoryIcon />,
+      title: "ACTIVE PACKAGES",
+      //   count: dashboardStats.users,
+      // count: 20,
+      count: countactivepackages,
     },
   ];
 

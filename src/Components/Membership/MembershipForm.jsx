@@ -56,12 +56,12 @@ const MembershipForm = ({ setModal }) => {
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startValue, setStartValue] = React.useState();
-  const [durations, setDurations] = useState();
+  const [durations, setDurations] = useState(0);
 
   const [endValue, setEndValue] = React.useState();
   const [price, setPrice] = useState();
   const [endDate, setEndDate] = useState();
-  const [paymentOption, setPaymentOption] = useState("esewa");
+  const [paymentOption, setPaymentOption] = useState("cash");
   const [userId, setUserId] = useState();
   const [packageId, setPackageId] = useState();
   const [openn, setOpenn] = useState(false);
@@ -86,7 +86,7 @@ const MembershipForm = ({ setModal }) => {
   // console.log("idd", fieldValue);
   // console.log("duration", durations);
 
-  const convertStartDate = (e) => {
+  const convertStartDate = async (e) => {
     // process date
     let date_string = e;
     let date_obj = moment(date_string, "ddd MMM DD YYYY HH:mm:ss ZZ (zzz)");
@@ -130,17 +130,19 @@ const MembershipForm = ({ setModal }) => {
     //   end_timestamp
     // );
 
-    const updatedDate = date.toLocaleString("en-US", options);
-    console.log(
-      "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
-      updatedDate
-    );
+    const updatedDate = await date.toLocaleString("en-US", options);
+    // console.log(
+    //   "🚀 ~ file: MembershipForm.jsx:130 ~ convertStartDate ~ updatedDate",
+    //   updatedDate
+    // );
     let enddate = new Date(updatedDate);
     console.log(
       "🚀 ~ file: MembershipForm.jsx:138 ~ convertStartDate ~ enddate",
       enddate
     );
-    let newDate = new Date(enddate.getTime() + durations * 24 * 60 * 60 * 1000);
+    let newDate = await new Date(
+      enddate.getTime() + durations * 24 * 60 * 60 * 1000
+    );
     console.log(
       "🚀 ~ file: MembershipForm.jsx:132 ~ convertStartDate ~ newDate",
       newDate
@@ -339,7 +341,7 @@ const MembershipForm = ({ setModal }) => {
                     renderInput={(params) => <TextField {...params} />}
                     readOnly
                   >
-                    {endFullDate}
+                    {/* {endFullDate} */}
                   </DesktopDatePicker>
                 </Grid>
                 <Grid item xs={9}>
