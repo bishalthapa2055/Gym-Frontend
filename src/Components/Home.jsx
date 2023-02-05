@@ -181,19 +181,10 @@ function DashboardContent() {
                 {/* {item.count ? item.count : <Progress />} */}
                 {item.count}
               </Typography>
-              {/* </> */}
-              {/* // ) : ( // <Progress /> */}
-              {/* // )} */}
             </Box>
           ))}
         </Stack>
       </Stack>
-      {/* </>
-      ) : (
-        <>
-          <Login />
-        </>
-      )} */}
     </>
   );
 }

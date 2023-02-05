@@ -265,7 +265,19 @@ export default function Slider() {
           anchor="left"
           open={open}
         >
-          <DrawerHeader>
+          <DrawerHeader
+            sx={{
+              background: "#F3F7FB",
+            }}
+          >
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ color: "#000000" }}
+            >
+              NRK FITNESS
+            </Typography>
             <IconButton
               onClick={handleDrawerClose}
               sx={{
@@ -273,7 +285,10 @@ export default function Slider() {
               }}
             >
               {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
+                <>
+                  <ChevronLeftIcon />
+                  {/* <Typography>hello</Typography> */}
+                </>
               ) : (
                 <ChevronRightIcon />
               )}
