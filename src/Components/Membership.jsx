@@ -382,12 +382,22 @@ export default function EnhancedTable() {
                                 scope="row"
                                 padding="none"
                               >
-                                {row.userId?.name}
+                                {row.userId?.name ? (
+                                  row.userId?.name
+                                ) : (
+                                  <Typography sx={{ color: "red" }}>
+                                    USER UNAVAILABLE
+                                  </Typography>
+                                )}
                               </TableCell>
                               <TableCell align="right">
-                                {row.package?.name
-                                  ? row.package?.name
-                                  : "Your Packages Expired"}
+                                {row.package?.name ? (
+                                  row.package?.name
+                                ) : (
+                                  <Typography sx={{ color: "red" }}>
+                                    PACKAGE DELETED
+                                  </Typography>
+                                )}
                               </TableCell>
                               <TableCell align="right">
                                 {row.payment?.paid_via}
@@ -405,7 +415,7 @@ export default function EnhancedTable() {
                               <TableCell align="right">
                                 {row?.package?.price
                                   ? row?.package?.price
-                                  : "Packages Expired"}
+                                  : Number(0)}
                               </TableCell>
 
                               <TableCell>
