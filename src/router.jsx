@@ -5,6 +5,7 @@ import Packages from "./Components/Packages";
 // import { Routes, Route } from "react-router-dom";
 import Memberships from "./Components/Membership";
 import Login from "./login";
+import Pagenotfound from "../src/Components/PagenotFound";
 import Profile from "../src/Components/profile";
 
 let status = true;
@@ -210,6 +211,15 @@ const routes = [
         element: <Login />,
       },
     ],
+  },
+  {
+    path: "*",
+    // children: [
+    // {
+    // path: "/login",
+    element: <Pagenotfound />,
+    // },
+    // ],
   },
 ];
 
