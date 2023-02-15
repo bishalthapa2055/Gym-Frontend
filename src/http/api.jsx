@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8888/api/web",
+  baseURL: "https://gym-app-server.onrender.com/api/web/",
 });
 
 api.defaults.headers.post["Content-Type"] = "application/json";
