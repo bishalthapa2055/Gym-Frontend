@@ -9,3 +9,5 @@ It includes various features
     6.For users Login with phone number in mobile phone to see theirs profile details
 
 For Starting:
+npm install
+npm start
