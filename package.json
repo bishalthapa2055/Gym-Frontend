@@ -21,6 +21,7 @@
     "formik": "^2.2.9",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.29.4",
+    "netlify-cli": "^12.10.0",
     "notistack": "^2.0.8",
     "react": "^18.2.0",
     "react-crud-table": "^0.3.1",
