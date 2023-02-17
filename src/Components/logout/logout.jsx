@@ -16,7 +16,7 @@ import {
   Stack,
   Popover,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 import { experimentalStyled } from "@mui/material";
