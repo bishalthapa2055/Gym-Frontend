@@ -24,7 +24,7 @@ export const adminService = {
   //login details
   getLogin: async (dispatch) => {
     try {
-      const url = `http://localhost:8888/api/web/login`;
+      const url = `https://gym-app-server.onrender.com/api/web/login`;
       const response = await api.post(url);
       // console.log("values", values);
 
